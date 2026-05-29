@@ -7,6 +7,8 @@ import '../../../theme/app_theme.dart';
 import '../components/app_menu.dart';
 import '../components/hero_header.dart';
 import '../components/services_horizontal_list.dart';
+import '../components/equipe_educacao_bem_estar_section.dart';
+import '../components/testemunhos_section.dart';
 
 class HomeClienteNormalView extends StatelessWidget {
   const HomeClienteNormalView({super.key});
@@ -78,6 +80,20 @@ class HomeClienteNormalView extends StatelessWidget {
                 ServicesHorizontalList(
                   services: HomeClienteNormalModel.services,
                 ),
+
+                const SizedBox(height: 18),
+                EquipeEducacaoBemEstarSection(
+                  onReadMore: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Em breve: mais conteúdos de bem-estar'),
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 18),
+                const TestemunhosSection(),
 
                 const SizedBox(height: 18),
                 Container(
