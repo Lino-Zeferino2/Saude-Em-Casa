@@ -6,6 +6,7 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_theme.dart';
 import '../components/app_menu.dart';
 import '../components/hero_header.dart';
+import '../components/services_horizontal_list.dart';
 
 class HomeClienteNormalView extends StatelessWidget {
   const HomeClienteNormalView({super.key});
@@ -73,7 +74,11 @@ class HomeClienteNormalView extends StatelessWidget {
                   onPlans: () => controller.onPlansPressed(context),
                 ),
 
-                // Placeholder para o resto da página (você vai definir depois)
+                const SizedBox(height: 14),
+                ServicesHorizontalList(
+                  services: HomeClienteNormalModel.services,
+                ),
+
                 const SizedBox(height: 18),
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -93,7 +98,7 @@ class HomeClienteNormalView extends StatelessWidget {
                     ),
                   ),
                   child: const Text(
-                    'Área reservada para o restante da página (cards, serviços e conteúdo).',
+                    'Área reservada para a próxima secção (você vai definir depois).',
                     style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
                   ),
                 ),
