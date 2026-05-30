@@ -29,6 +29,22 @@ class _TestemunhosSectionState extends State<TestemunhosSection> {
     super.dispose();
   }
 
+  void _scrollBy(double dx) {
+    if (!_scrollController.hasClients) return;
+
+    final current = _scrollController.offset;
+    final target = (current + dx).clamp(
+      _scrollController.position.minScrollExtent,
+      _scrollController.position.maxScrollExtent,
+    );
+
+    _scrollController.animateTo(
+      target,
+      duration: const Duration(milliseconds: 320),
+      curve: Curves.easeOutCubic,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isNarrow = MediaQuery.of(context).size.width < 360;
@@ -55,6 +71,10 @@ class _TestemunhosSectionState extends State<TestemunhosSection> {
                 ),
               ),
               const SizedBox(width: 12),
+              _ScrollControls(
+                onLeft: () => _scrollBy(-260),
+                onRight: () => _scrollBy(260),
+              ),
             ],
           ),
           const SizedBox(height: 6),
@@ -86,7 +106,8 @@ class _TestemunhosSectionState extends State<TestemunhosSection> {
                   scrollDirection: Axis.horizontal,
                   padding: EdgeInsets.zero,
                   shrinkWrap: false,
-                  keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                  keyboardDismissBehavior:
+                      ScrollViewKeyboardDismissBehavior.onDrag,
                   clipBehavior: Clip.hardEdge,
                   itemCount: HomeClienteNormalModel.testimonials.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 12),
@@ -114,3 +135,66 @@ class _TestemunhosSectionState extends State<TestemunhosSection> {
   }
 }
 
+class _ScrollControls extends StatelessWidget {
+  const _ScrollControls({
+    required this.onLeft,
+    required this.onRight,
+  });
+
+  final VoidCallback onLeft;
+  final VoidCallback onRight;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _ControlButton(
+          icon: Icons.chevron_left,
+          onPressed: onLeft,
+        ),
+        const SizedBox(width: 10),
+        _ControlButton(
+          icon: Icons.chevron_right,
+          onPressed: onRight,
+        ),
+      ],
+    );
+  }
+}
+
+class _ControlButton extends StatelessWidget {
+  const _ControlButton({
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.85),
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow.withOpacity(0.08),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
+        ],
+        border: Border.all(color: AppColors.primary.withOpacity(0.12), width: 1),
+      ),
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        icon: Icon(icon, size: 20, color: AppColors.textPrimary),
+        onPressed: onPressed,
+        tooltip: 'Navegar',
+      ),
+    );
+  }
+}
