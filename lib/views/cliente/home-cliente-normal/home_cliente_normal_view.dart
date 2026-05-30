@@ -9,6 +9,7 @@ import '../components/hero_header.dart';
 import '../components/services_horizontal_list.dart';
 import '../components/equipe_educacao_bem_estar_section.dart';
 import '../components/testemunhos_section.dart';
+import '../components/publicacoes_section.dart';
 
 class HomeClienteNormalView extends StatelessWidget {
   const HomeClienteNormalView({super.key});
@@ -92,32 +93,11 @@ class HomeClienteNormalView extends StatelessWidget {
                   },
                 ),
 
-                const SizedBox(height: 18),
+                const SizedBox(height: 34),
                 const TestemunhosSection(),
 
                 const SizedBox(height: 18),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.7),
-                    borderRadius: BorderRadius.circular(18),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.shadow.withOpacity(0.08),
-                        blurRadius: 18,
-                        offset: const Offset(0, 6),
-                      )
-                    ],
-                    border: Border.all(
-                      color: AppColors.primary.withOpacity(0.10),
-                      width: 1,
-                    ),
-                  ),
-                  child: const Text(
-                    'Área reservada para a próxima secção (você vai definir depois).',
-                    style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
-                  ),
-                ),
+                PublicacoesSection(),
               ],
             ),
           ),
