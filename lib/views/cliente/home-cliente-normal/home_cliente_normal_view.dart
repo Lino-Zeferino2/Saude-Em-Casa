@@ -10,6 +10,7 @@ import '../components/services_horizontal_list.dart';
 import '../components/equipe_educacao_bem_estar_section.dart';
 import '../components/testemunhos_section.dart';
 import '../components/publicacoes_section.dart';
+import '../components/app_footer.dart';
 
 class HomeClienteNormalView extends StatelessWidget {
   const HomeClienteNormalView({super.key});
@@ -98,6 +99,8 @@ class HomeClienteNormalView extends StatelessWidget {
 
                 const SizedBox(height: 18),
                 PublicacoesSection(),
+                const SizedBox(height: 26),
+                AppFooter(),
               ],
             ),
           ),
