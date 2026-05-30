@@ -69,7 +69,7 @@ class HeroHeader extends StatelessWidget {
               padding: EdgeInsets.fromLTRB(18, topPadding + 26, 18, 16),
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  final isNarrow = constraints.maxWidth < 360;
+                  final isNarrow = constraints.maxWidth < 520;
 
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,53 +134,95 @@ class HeroHeader extends StatelessWidget {
 
                       const SizedBox(height: 32),
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: isNarrow ? 185 : 210,
-                            child: PrimaryButton(
-                              height: 46,
-                              label: 'Agendar Avaliaçao',
-                              onPressed: onSchedule,
-                              icon: Icons.event_available_outlined,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          SizedBox(
-                            width: isNarrow ? 150 : 175,
-                            child: OutlinedButton(
-                              onPressed: onPlans,
-                              style: OutlinedButton.styleFrom(
-                                foregroundColor: AppColors.textPrimary,
-                                side: const BorderSide(
-                                  color: AppColors.primary,
-                                  width: 1.4,
+                      isNarrow
+                          ? Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                PrimaryButton(
+                                  height: 46,
+                                  label: 'Agendar Avaliaçao',
+                                  onPressed: onSchedule,
+                                  icon: Icons.event_available_outlined,
                                 ),
-                                backgroundColor: Colors.white.withOpacity(0.92),
-                                padding: const EdgeInsets.symmetric(vertical: 10),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.layers_outlined, size: 18),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Ver planos',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 14,
+                                const SizedBox(height: 10),
+                                OutlinedButton(
+                                  onPressed: onPlans,
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: AppColors.textPrimary,
+                                    side: const BorderSide(
+                                      color: AppColors.primary,
+                                      width: 1.4,
+                                    ),
+                                    backgroundColor: Colors.white.withOpacity(0.92),
+                                    padding: const EdgeInsets.symmetric(vertical: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
                                     ),
                                   ),
-                                ],
-                              ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.layers_outlined, size: 18),
+                                      const SizedBox(width: 8),
+                                      const Text(
+                                        'Ver planos',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: isNarrow ? 185 : 210,
+                                  child: PrimaryButton(
+                                    height: 46,
+                                    label: 'Agendar Avaliaçao',
+                                    onPressed: onSchedule,
+                                    icon: Icons.event_available_outlined,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                SizedBox(
+                                  width: isNarrow ? 150 : 175,
+                                  child: OutlinedButton(
+                                    onPressed: onPlans,
+                                    style: OutlinedButton.styleFrom(
+                                      foregroundColor: AppColors.textPrimary,
+                                      side: const BorderSide(
+                                        color: AppColors.primary,
+                                        width: 1.4,
+                                      ),
+                                      backgroundColor: Colors.white.withOpacity(0.92),
+                                      padding: const EdgeInsets.symmetric(vertical: 10),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(Icons.layers_outlined, size: 18),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'Ver planos',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w900,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
                     ],
                   );
                 },

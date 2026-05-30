@@ -192,27 +192,28 @@ class _LinksGrid extends StatelessWidget {
         children: [
           _FooterColumn(
             title: 'Links úteis',
+            textStyle: textStyle,
             children: const [
               _FooterLink(text: 'Como funciona'),
               _FooterLink(text: 'Planos e preços'),
               _FooterLink(text: 'Perguntas frequentes'),
               _FooterLink(text: 'Política de privacidade'),
             ],
-            textStyle: textStyle,
           ),
           const SizedBox(height: 14),
           _FooterColumn(
             title: 'Suporte',
+            textStyle: textStyle,
             children: const [
               _FooterLink(text: 'Central de Ajuda'),
               _FooterLink(text: 'Fale connosco'),
               _FooterLink(text: 'Termos de serviço'),
             ],
-            textStyle: textStyle,
           ),
           const SizedBox(height: 14),
           _FooterColumn(
             title: 'Contactos',
+            textStyle: textStyle,
             children: [
               const _FooterContactRow(
                 icon: Icons.phone_rounded,
@@ -227,7 +228,6 @@ class _LinksGrid extends StatelessWidget {
                 text: 'Angola',
               ),
             ],
-            textStyle: textStyle,
           ),
         ],
       );
@@ -239,31 +239,32 @@ class _LinksGrid extends StatelessWidget {
         Expanded(
           child: _FooterColumn(
             title: 'Links úteis',
+            textStyle: textStyle,
             children: const [
               _FooterLink(text: 'Como funciona'),
               _FooterLink(text: 'Planos e preços'),
               _FooterLink(text: 'Perguntas frequentes'),
               _FooterLink(text: 'Política de privacidade'),
             ],
-            textStyle: textStyle,
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: _FooterColumn(
             title: 'Suporte',
+            textStyle: textStyle,
             children: const [
               _FooterLink(text: 'Central de Ajuda'),
               _FooterLink(text: 'Fale connosco'),
               _FooterLink(text: 'Termos de serviço'),
             ],
-            textStyle: textStyle,
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: _FooterColumn(
             title: 'Contactos',
+            textStyle: textStyle,
             children: const [
               _FooterContactRow(
                 icon: Icons.phone_rounded,
@@ -278,7 +279,6 @@ class _LinksGrid extends StatelessWidget {
                 text: 'Angola',
               ),
             ],
-            textStyle: textStyle,
           ),
         ),
       ],

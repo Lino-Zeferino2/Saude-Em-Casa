@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'theme/app_theme.dart';
 import 'views/cliente/home-cliente-normal/home_cliente_normal_view.dart';
 
 void main() {
@@ -11,7 +12,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const HomeClienteNormalView();
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Saúde em Casa',
+      theme: AppTheme.light(),
+      home: const HomeClienteNormalView(),
+    );
   }
 }
 
