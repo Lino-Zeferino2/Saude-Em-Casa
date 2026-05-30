@@ -47,8 +47,48 @@ class _TestemunhosSectionState extends State<TestemunhosSection> {
 
   @override
   Widget build(BuildContext context) {
-    final isNarrow = MediaQuery.of(context).size.width < 360;
+    final width = MediaQuery.of(context).size.width;
+    final isMobile = width < 500;
+    final isNarrow = width < 360;
 
+    // Mobile: ocultar “Vozes...” e controles (como solicitado)
+    if (isMobile) {
+      return Padding(
+        padding: const EdgeInsets.only(top: 8, bottom: 8),
+        child: SizedBox(
+          height: 248,
+          child: ListView.separated(
+            controller: _scrollController,
+            primary: false,
+            physics: const BouncingScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            padding: EdgeInsets.zero,
+            shrinkWrap: false,
+            keyboardDismissBehavior:
+                ScrollViewKeyboardDismissBehavior.onDrag,
+            clipBehavior: Clip.hardEdge,
+            itemCount: HomeClienteNormalModel.testimonials.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final t = HomeClienteNormalModel.testimonials[index];
+              return SizedBox(
+                width: isNarrow ? 270 : 300,
+                child: TestemunhoCard(
+                  title: t['title'] ?? '',
+                  description: t['description'] ?? '',
+                  mediaType: t['mediaType'] ?? 'image',
+                  mediaAsset: t['mediaAsset'] ?? '',
+                  likes: t['likes'] ?? '0',
+                  comments: t['comments'] ?? '0',
+                ),
+              );
+            },
+          ),
+        ),
+      );
+    }
+
+    // Web/Desktop: voltar com header + setas + Scrollbar (como estava)
     return Padding(
       padding: const EdgeInsets.only(top: 8, bottom: 8),
       child: Column(
