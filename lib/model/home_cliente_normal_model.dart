@@ -54,6 +54,7 @@ class HomeClienteNormalModel {
       'Histórias reais de cuidado, apoio e tranquilidade.';
 
   // mediaType: 'image' | 'video'
+  // Inclui casos “só texto” (mediaAsset '') para validar o layout sem imagem/vídeo.
   static const List<Map<String, String>> testimonials = [
     {
       'title': 'Cuidado com carinho',
@@ -78,6 +79,42 @@ class HomeClienteNormalModel {
       'mediaAsset': 'assets/doctor_1.png',
       'likes': '94',
       'comments': '12',
+    },
+
+    // Só texto (sem imagem)
+    {
+      'title': 'Conforto em Família',
+      'description': 'Apoio direto e linguagem simples. Em poucos dias, a rotina melhorou bastante.',
+      'mediaType': 'image',
+      'mediaAsset': '',
+      'likes': '61',
+      'comments': '7',
+    },
+    {
+      'title': 'Esperança e Cuidado',
+      'description': 'O atendimento foi humano do início ao fim. Sentimos confiança em casa.',
+      'mediaType': 'image',
+      'mediaAsset': '',
+      'likes': '52',
+      'comments': '5',
+    },
+
+    // Só texto (sem vídeo e sem imagem)
+    {
+      'title': 'Sem Pressa, Com Atenção',
+      'description': 'Gostei do tempo dedicado às explicações e do acompanhamento sempre disponível.',
+      'mediaType': 'image',
+      'mediaAsset': '',
+      'likes': '44',
+      'comments': '4',
+    },
+    {
+      'title': 'Tranquilidade para a Família',
+      'description': 'Acompanhamento constante e orientações claras. A família ficou mais segura.',
+      'mediaType': 'image',
+      'mediaAsset': '',
+      'likes': '73',
+      'comments': '9',
     },
   ];
 }
