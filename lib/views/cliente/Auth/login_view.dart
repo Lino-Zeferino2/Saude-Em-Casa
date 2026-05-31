@@ -127,7 +127,7 @@ class _LoginViewState extends State<LoginView> {
                     child: DecoratedBox(
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: const AssetImage('assets/health_care.png'),
+                          image: const AssetImage('assets/doctor_1.png'),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -466,6 +466,7 @@ class _LoginCard extends StatelessWidget {
                 TextFormField(
                   controller: identityController,
                   keyboardType: TextInputType.emailAddress,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.person_rounded),
                     labelText: 'Telemóvel ou email',
@@ -476,8 +477,18 @@ class _LoginCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide.none,
                     ),
+                    errorStyle: const TextStyle(
+                      color: Colors.redAccent,
+                      fontSize: 12,
+                      height: 1.2,
+                    ),
                   ),
-                  validator: (_) => state.isValidPhoneOrEmail ? null : state.isPhoneCandidate ? null : state.isEmailCandidate ? null : 'Informe telemóvel (9 dígitos) ou email válido',
+                  validator: (_) {
+                    final v = state.phoneOrEmail.trim();
+                    if (v.isEmpty) return 'Informe telemóvel ou email';
+                    if (state.isValidPhoneOrEmail) return null;
+                    return 'Informe telemóvel (9 dígitos) ou email válido';
+                  },
                 ),
                 const SizedBox(height: 12),
 
@@ -485,6 +496,7 @@ class _LoginCard extends StatelessWidget {
                 TextFormField(
                   controller: passwordController,
                   obscureText: !state.showPassword,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(
                     prefixIcon: const Icon(Icons.lock_outline_rounded),
                     labelText: 'Senha',
@@ -501,8 +513,18 @@ class _LoginCard extends StatelessWidget {
                         state.showPassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
                       ),
                     ),
+                    errorStyle: const TextStyle(
+                      color: Colors.redAccent,
+                      fontSize: 12,
+                      height: 1.2,
+                    ),
                   ),
-                  validator: (_) => state.isValidPassword ? null : 'A senha deve ter pelo menos 6 caracteres',
+                  validator: (_) {
+                    final v = state.password.trim();
+                    if (v.isEmpty) return 'A senha é obrigatória';
+                    if (state.isValidPassword) return null;
+                    return 'A senha deve ter pelo menos 6 caracteres';
+                  },
                 ),
                 const SizedBox(height: 6),
 

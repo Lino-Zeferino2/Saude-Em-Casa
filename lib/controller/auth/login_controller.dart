@@ -41,9 +41,16 @@ class LoginController extends ChangeNotifier {
     final phoneOrEmailErr = validatePhoneOrEmail();
     final passwordErr = validatePassword();
 
-    if (phoneOrEmailErr != null || passwordErr != null) {
+    if (phoneOrEmailErr != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Verifique os campos do formulário')),
+        SnackBar(content: Text(phoneOrEmailErr)),
+      );
+      return;
+    }
+
+    if (passwordErr != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(passwordErr)),
       );
       return;
     }
