@@ -110,45 +110,82 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Widget _MobileHeader() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(18),
-      child: Stack(
+    return Padding(
+      padding: const EdgeInsets.only(top: 6, bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset(
-            'assets/doctor_1.png',
-            height: 220,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          ),
-          Container(
-            height: 220,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.black.withOpacity(0.55),
-                  Colors.black.withOpacity(0.12),
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                // logo
-                SizedBox(height: 6),
-                _MobileOverlayTitle(
-                  title: 'Cuidado profissional no conforto do seu lar.',
-                  subtitle:
-                      'Simples, seguro e com acompanhamento humano.',
+          // Logo em destaque
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              // ponto "grade" visual leve
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: 0.06,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: const AssetImage('assets/health_care.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
-              ],
-            ),
-          )
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.75),
+                      boxShadow: [
+                        BoxShadow(
+                          blurRadius: 18,
+                          offset: const Offset(0, 8),
+                          color: Colors.black.withOpacity(0.10),
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      'assets/logo.png',
+                      width: 150,
+                      height: 150,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 10),
+
+          // Nome
+          Text(
+            'Saúde em Casa',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.textPrimary,
+                ),
+            textAlign: TextAlign.center,
+          ),
+
+          const SizedBox(height: 8),
+
+          // Somente descrição (sem título)
+          Text(
+            'Simples, seguro e com acompanhamento humano.',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.35,
+                ),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
@@ -371,25 +408,30 @@ class _LoginCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isMobile = MediaQuery.of(context).size.width < 700;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'Bem-vindo de volta',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-                color: AppColors.textPrimary,
-              ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Acesse sua conta para genciar seus cuidados.',
-          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: AppColors.textSecondary,
-                height: 1.3,
-              ),
-        ),
-        const SizedBox(height: 16),
+        if (!isMobile) ...[
+          Text(
+            'Bem-vindo de volta',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.textPrimary,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Acesse sua conta para genciar seus cuidados.',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.3,
+                ),
+          ),
+          const SizedBox(height: 16),
+        ],
+        if (isMobile) const SizedBox(height: 6),
 
         Form(
           key: formKey,
@@ -487,9 +529,32 @@ class _LoginCard extends StatelessWidget {
 
                 const SizedBox(height: 12),
                 Center(
-                  child: TextButton(
+                  child: Text(
+                    'Não possui uma conta?',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Center(
+                  child: OutlinedButton(
                     onPressed: onRegister,
-                    child: const Text('Não possui uma conta? Cadastra-se aqui'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.textSecondary,
+                      side: const BorderSide(
+                        color: Color(0xFFD6E2F0),
+                        width: 1,
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: const Text(
+                      'Cadastra-se aqui',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
                   ),
                 ),
               ],
