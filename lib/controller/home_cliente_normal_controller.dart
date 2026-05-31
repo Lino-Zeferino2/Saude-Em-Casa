@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../views/cliente/auth/login_view.dart';
+
 class HomeClienteNormalController {
   const HomeClienteNormalController();
 
   void onLoginPressed(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Login (em breve)')),
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const LoginView()),
     );
   }
 
