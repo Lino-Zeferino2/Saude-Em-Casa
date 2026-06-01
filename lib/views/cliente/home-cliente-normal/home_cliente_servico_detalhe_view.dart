@@ -25,6 +25,10 @@ class HomeClienteServicoDetalheView extends StatelessWidget {
       'Orientação para cuidados no domicílio',
       'Avaliação inicial e plano de acompanhamento',
       'Registro e comunicação com a família (quando aplicável)',
+      'Atenção às necessidades específicas do paciente',
+      'Rotina estruturada e acompanhamento de evolução',
+      'Suporte educativo para cuidadores e familiares',
+      'Reavaliação periódica e ajustes no plano quando necessário',
     ];
 
     final Widget esquerda = _DetalheEsquerda(
@@ -167,33 +171,82 @@ class _DetalheEsquerda extends StatelessWidget {
                       ),
                 ),
                 const SizedBox(height: 10),
-                ...beneficios.map(
-                  (b) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Icon(
-                          Icons.check_circle_rounded,
-                          color: Color(0xFF2ECC71),
-                          size: 20,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            b,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  color: AppColors.textSecondary,
-                                  height: 1.35,
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final bool isWeb = constraints.maxWidth >= 700;
+                    if (!isWeb) {
+                      return Column(
+                        children: beneficios.map(
+                          (b) => Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 6),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Icon(
+                                  Icons.check_circle_rounded,
+                                  color: Color(0xFF2ECC71),
+                                  size: 20,
                                 ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    b,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: AppColors.textSecondary,
+                                          height: 1.35,
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
+                        ).toList(),
+                      );
+                    }
+
+                    // Web/desktop: 2 colunas dentro do mesmo card
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: beneficios.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                       // mainAxisSpacing: 4,
+                        crossAxisSpacing: 1,
+                        childAspectRatio: 10.2,
+                      ),
+                      itemBuilder: (context, index) {
+                        final b = beneficios[index];
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(
+                              Icons.check_circle_rounded,
+                              color: Color(0xFF2ECC71),
+                              size: 20,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                b,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: AppColors.textSecondary,
+                                      height: 1.35,
+                                    ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
                 ),
               ],
             ),
