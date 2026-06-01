@@ -4,6 +4,7 @@ import '../../../model/home_cliente_servicos_model.dart';
 import '../../../theme/app_colors.dart';
 
 import '../components/app_footer.dart';
+import 'home_cliente_solicitar_servico_view.dart';
 
 class HomeClienteServicoDetalheView extends StatelessWidget {
   final ServiceItem service;
@@ -302,9 +303,9 @@ class _DetalheDireita extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Solicitação (em breve)'),
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const HomeClienteSolicitarServicoView(),
                     ),
                   );
                 },

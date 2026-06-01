@@ -105,17 +105,24 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
         automaticallyImplyLeading: false,
         titleSpacing: 6,
         leading: isMobile
-            ? Builder(
-                builder: (context) {
-                  return IconButton(
-                    tooltip: 'Menu',
-                    icon: const Icon(
-                      Icons.menu_rounded,
-                      color: AppColors.textPrimary,
-                    ),
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer();
-                    },
+            ? AppMenu(
+                items: const [
+                  'Inicio',
+                  'Serviços',
+                  'Formaçao',
+                  'Parceiros',
+                  'Sobre nos',
+                ],
+                activeItem: activeMenu,
+                onMenuSelected: (item) {
+                  setState(() => activeMenu = item);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Em breve: $item')),
+                  );
+                },
+                onLoginPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Login (em breve)')),
                   );
                 },
               )
