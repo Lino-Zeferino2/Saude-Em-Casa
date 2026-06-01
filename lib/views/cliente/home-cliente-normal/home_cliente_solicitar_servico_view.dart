@@ -119,8 +119,8 @@ class _HomeClienteSolicitarServicoViewState
                           const SnackBar(content: Text('Novo cliente (em breve)')),
                         );
                       },
-                      // "Novo inativo a princípio"
-                      novoEnabled: false,
+                      // Novo habilita quando o dropdown estiver habilitado ("Para outra pessoa")
+                      novoEnabled: true,
                     ),
                     const SizedBox(height: 14),
 
@@ -182,37 +182,27 @@ class _HomeClienteSolicitarServicoViewState
                             dataController: _dataController,
                             horaController: _horaController,
                           ),
+                          const SizedBox(height: 14),
+
+                          // Informações adicionais volta para a esquerda
+                          _AdditionalInfoCard(
+                            locked: _lockedStep2,
+                            controller: _adicionaisController,
+                          ),
                         ],
                       ),
                     ),
 
                     const SizedBox(width: 14),
 
-                    // Direita: flex 3 (Informações adicionais + suporte + próximo)
+                    // Direita: flex 3 (suporte + próximo)
                     Expanded(
                       flex: 3,
                       child: Column(
                         children: [
-                          _AdditionalInfoCard(
-                            locked: _lockedStep2,
-                            controller: _adicionaisController,
-                          ),
-                          const SizedBox(height: 14),
-
                           _SupportCard(),
                           const SizedBox(height: 14),
-
                           _RightAlignedNextButton(onPressed: _goNext),
-
-                          const SizedBox(height: 18),
-                          Text(
-                            'Etapa atual: $_stepTitle',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: AppColors.textSecondary,
-                                  height: 1.35,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                          ),
                         ],
                       ),
                     ),
@@ -274,55 +264,116 @@ class _StepsMissingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final stepNums = [1, 2, 3];
+    // Espera steps com: [Informações, Tipo de atendimento, Confirmação]
+    const stepNums = [1, 2, 3];
+
+    Color lineColor(int stepNum) =>
+        stepNum < currentStep ? AppColors.primary : AppColors.textSecondary.withOpacity(0.25);
+
+    Color dotColor(int stepNum) {
+      if (stepNum < currentStep) return AppColors.primary;
+      if (stepNum == currentStep) return AppColors.primary;
+      return AppColors.textSecondary;
+    }
+
+    IconData dotIcon(int stepNum) {
+      if (stepNum < currentStep) return Icons.check_circle_rounded;
+      if (stepNum == currentStep) return Icons.radio_button_checked_rounded;
+      return Icons.radio_button_unchecked_rounded;
+    }
+
+    TextStyle labelStyle(bool isActive) {
+      return Theme.of(context).textTheme.bodyMedium!.copyWith(
+            color: isActive ? AppColors.textPrimary : AppColors.textSecondary,
+            fontWeight: isActive ? FontWeight.w900 : FontWeight.w600,
+            height: 1.1,
+          );
+    }
+
+    Widget stepItem(int index) {
+      final stepNum = stepNums[index];
+      final label = steps[index];
+
+      final isActive = stepNum == currentStep;
+      final isDone = stepNum < currentStep;
+
+      return Expanded(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              dotIcon(stepNum),
+              color: dotColor(stepNum),
+              size: 20,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: labelStyle(isActive),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            if (isDone) const SizedBox(height: 0),
+          ],
+        ),
+      );
+    }
 
     return _SectionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Passos da solicitação',
+            'Etapas da solicitação',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w900,
                   color: AppColors.textPrimary,
                 ),
           ),
-          const SizedBox(height: 10),
-          for (int i = 0; i < steps.length; i++)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    stepNums[i] < currentStep
-                        ? Icons.check_circle_rounded
-                        : (stepNums[i] == currentStep
-                            ? Icons.radio_button_checked_rounded
-                            : Icons.radio_button_unchecked_rounded),
-                    color: stepNums[i] <= currentStep
-                        ? AppColors.primary
-                        : AppColors.textSecondary,
-                    size: 18,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      steps[i],
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: stepNums[i] <= currentStep
-                                ? AppColors.textPrimary
-                                : AppColors.textSecondary,
-                            height: 1.35,
-                            fontWeight: stepNums[i] == currentStep
-                                ? FontWeight.w900
-                                : FontWeight.w600,
-                          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              // 1
+              stepItem(0),
+              // linha entre 1 e 2
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      height: 3,
+                      decoration: BoxDecoration(
+                        color: lineColor(2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
+              // 2
+              stepItem(1),
+              // linha entre 2 e 3
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Container(
+                      height: 3,
+                      decoration: BoxDecoration(
+                        color: lineColor(3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // 3
+              stepItem(2),
+            ],
+          ),
         ],
       ),
     );
@@ -401,55 +452,41 @@ class _PatientDataCard extends StatelessWidget {
 
               const SizedBox(height: 14),
 
-              // Familiar dropdown
-              IgnorePointer(
-                ignoring: !isOther,
-                child: Opacity(
-                  opacity: isOther ? 1 : 0.55,
-                  child: DropdownButtonFormField<String>(
-                    value: isOther ? familiarSelecionado : null,
-                    decoration: InputDecoration(
-                      labelText: 'Selecionar familiar',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14),
-                        borderSide: BorderSide(
-                          color: AppColors.primary.withOpacity(0.25),
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 10,
-                      ),
-                    ),
-                    items: familiares.map((f) {
-                      return DropdownMenuItem(
-                        value: f,
-                        child: Text(
-                          f,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: isOther ? onFamiliarChanged : null,
-                  ),
-                ),
-              ),
-
+              // Mesma linha: Selecionar familiar (90%) + "Novo" (10%)
               const SizedBox(height: 12),
-
-              // Linha: Dropdown (90%) + Novo (10%) como você pediu.
-              // Aqui o dropdown já está acima; então mantemos o Novo na mesma "família".
-              // Para satisfazer exatamente 90/10, aplicamos a mesma linha:
               Row(
                 children: [
                   Expanded(
                     flex: 9,
                     child: IgnorePointer(
-                      ignoring: true, // já existe dropdown acima, aqui só para manter layout 90/10
+                      ignoring: !isOther,
                       child: Opacity(
-                        opacity: 0.0,
-                        child: Container(
-                          height: 44,
+                        opacity: isOther ? 1 : 0.55,
+                        child: DropdownButtonFormField<String>(
+                          value: isOther ? familiarSelecionado : null,
+                          decoration: InputDecoration(
+                            labelText: 'Selecionar familiar',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(14),
+                              borderSide: BorderSide(
+                                color: AppColors.primary.withOpacity(0.25),
+                              ),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 10,
+                            ),
+                          ),
+                          items: familiares.map((f) {
+                            return DropdownMenuItem(
+                              value: f,
+                              child: Text(
+                                f,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: isOther ? onFamiliarChanged : null,
                         ),
                       ),
                     ),
@@ -460,8 +497,9 @@ class _PatientDataCard extends StatelessWidget {
                     child: SizedBox(
                       height: 44,
                       child: OutlinedButton.icon(
-                        onPressed:
-                            (novoEnabled && isOther) ? onNovoCliente : null,
+                        onPressed: (novoEnabled && isOther)
+                            ? onNovoCliente
+                            : null,
                         icon: const Icon(Icons.person_add_rounded),
                         label: const Text('Novo'),
                         style: OutlinedButton.styleFrom(
