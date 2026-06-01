@@ -27,6 +27,66 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
+      drawer: isMobile
+          ? Drawer(
+              child: SafeArea(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'Saúde em Casa',
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  color: AppColors.primary,
+                                ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    ...[
+                      'Inicio',
+                      'Serviços',
+                      'Formaçao',
+                      'Parceiros',
+                      'Sobre nos',
+                    ].map(
+                      (item) {
+                        final bool selected = item == activeMenu;
+                        return ListTile(
+                          title: Text(
+                            item,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  color: selected
+                                      ? AppColors.primary
+                                      : AppColors.textPrimary,
+                                ),
+                          ),
+                          selected: selected,
+                          selectedTileColor:
+                              AppColors.primary.withOpacity(0.08),
+                          onTap: () {
+                            setState(() => activeMenu = item);
+                            Navigator.of(context).pop(); // fecha Drawer
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Em breve: $item')),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                    const Spacer(),
+                  ],
+                ),
+              ),
+            )
+          : null,
       appBar: AppBar(
         backgroundColor: Colors.white.withOpacity(0.96),
         foregroundColor: AppColors.textPrimary,
@@ -35,13 +95,17 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
         automaticallyImplyLeading: false,
         titleSpacing: 6,
         leading: isMobile
-            ? IconButton(
-                tooltip: 'Menu',
-                icon: const Icon(Icons.menu_rounded,
-                    color: AppColors.textPrimary),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Menu (em breve)')),
+            ? Builder(
+                builder: (context) {
+                  return IconButton(
+                    tooltip: 'Menu',
+                    icon: const Icon(
+                      Icons.menu_rounded,
+                      color: AppColors.textPrimary,
+                    ),
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer();
+                    },
                   );
                 },
               )
@@ -144,7 +208,6 @@ class _Header extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-       
       ],
     );
   }
@@ -157,26 +220,27 @@ class _ServicesList extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        // Objetivo: 4 cards por linha (1ª linha) e por baixo mais 4, etc.
         final double maxWidth = constraints.maxWidth;
 
         // 4 colunas quando couber; caso contrário reduz para 2.
-        final int crossAxisCount =
-    maxWidth > 1200 ? 6 :
-    maxWidth > 900 ? 5 :
-    maxWidth > 600 ? 2 :
-    2;
+        final int crossAxisCount = maxWidth > 1200
+            ? 6
+            : maxWidth > 900
+                ? 5
+                : maxWidth > 600
+                    ? 2
+                    : 2;
 
         return GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: services.length,
-         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-  crossAxisCount: crossAxisCount,
-  mainAxisSpacing: 12,
-  crossAxisSpacing: 12,
-  mainAxisExtent: 190,
-),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            mainAxisExtent: 220,
+          ),
           itemBuilder: (context, i) {
             final s = services[i];
             return _ServiceCard(
@@ -259,35 +323,35 @@ class _ServiceCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-                height: 1.35,
-              ),
+                    color: AppColors.textSecondary,
+                    height: 1.35,
+                  ),
             ),
             const SizedBox(height: 10),
             Padding(
-  padding: const EdgeInsets.symmetric(horizontal: 4),
-  child: SizedBox(
-    width: double.infinity,
-    child: ElevatedButton(
-      onPressed: onVerDetalhes,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
-      ),
-      child: const Text(
-        'Ver detalhes',
-        style: TextStyle(
-          fontWeight: FontWeight.w900,
-        ),
-      ),
-    ),
-  ),
-),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: onVerDetalhes,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: const Text(
+                    'Ver detalhes',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -307,10 +371,10 @@ class _PersonalizedPlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-     padding: const EdgeInsets.symmetric(
-  horizontal: 18,
-  vertical: 32,
-),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 18,
+        vertical: 32,
+      ),
       decoration: BoxDecoration(
         color: const Color(0xFF6BB6FF).withOpacity(0.10),
         borderRadius: BorderRadius.circular(22),
@@ -347,61 +411,105 @@ class _PersonalizedPlanCard extends StatelessWidget {
                 ),
           ),
           const SizedBox(height: 14),
-        LayoutBuilder(
-  builder: (context, constraints) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 180,
-              child: ElevatedButton(
-                onPressed: onSolicitarOrcamento,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final bool isMobileButtons = constraints.maxWidth < 700;
+
+              if (isMobileButtons) {
+                // Mobile: botões um abaixo do outro
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: onSolicitarOrcamento,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: const Text(
+                          'Solicitar orçamento',
+                          style: TextStyle(fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: onFalarComConsultor,
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          side: BorderSide(
+                            color: AppColors.primary.withOpacity(0.9),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        child: const Text(
+                          'Falar com Consultor',
+                          style: TextStyle(fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              }
+
+              // Web/desktop: botões lado a lado (mantém comportamento)
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 180,
+                    child: ElevatedButton(
+                      onPressed: onSolicitarOrcamento,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        'Solicitar orçamento',
+                        style: TextStyle(fontWeight: FontWeight.w900),
+                      ),
+                    ),
                   ),
-                ),
-                child: const Text(
-                  'Solicitar orçamento',
-                  style: TextStyle(fontWeight: FontWeight.w900),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            SizedBox(
-              width: 170,
-              child: OutlinedButton(
-                onPressed: onFalarComConsultor,
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  side: BorderSide(
-                    color: AppColors.primary.withOpacity(0.9),
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    width: 170,
+                    child: OutlinedButton(
+                      onPressed: onFalarComConsultor,
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        side: BorderSide(
+                          color: AppColors.primary.withOpacity(0.9),
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: const Text(
+                        'Falar com Consultor',
+                        style: TextStyle(fontWeight: FontWeight.w900),
+                      ),
+                    ),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: const Text(
-                  'Falar com Consultor',
-                  style: TextStyle(fontWeight: FontWeight.w900),
-                ),
-              ),
-            ),
-            const SizedBox(height: 32),
-          ],
-        ),
-      ],
-    );
-  },
-),
-       
+                ],
+              );
+            },
+          ),
         ],
       ),
     );
