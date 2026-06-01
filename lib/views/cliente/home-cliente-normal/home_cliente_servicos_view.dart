@@ -19,7 +19,16 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
   final controller = const HomeClienteServicosController();
   String activeMenu = 'Serviços';
 
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+
   bool get isMobile => MediaQuery.of(context).size.width < 700;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +181,13 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
               const SizedBox(height: 4),
               _Header(),
               const SizedBox(height: 14),
-              _ServicesList(),
+              _ServicesSearchBar(
+                controller: _searchController,
+                value: _searchQuery,
+                onChanged: (value) => setState(() => _searchQuery = value),
+              ),
+              const SizedBox(height: 14),
+              _ServicesList(query: _searchQuery),
               const SizedBox(height: 18),
               _PersonalizedPlanCard(
                 onSolicitarOrcamento: () =>
@@ -213,10 +228,76 @@ class _Header extends StatelessWidget {
   }
 }
 
-class _ServicesList extends StatelessWidget {
+class _ServicesSearchBar extends StatelessWidget {
+  final TextEditingController controller;
+  final String value;
+  final ValueChanged<String> onChanged;
+
+  const _ServicesSearchBar({
+    required this.controller,
+    required this.value,
+    required this.onChanged,
+  });
+
   @override
   Widget build(BuildContext context) {
-    final services = HomeClienteServicosModel.services;
+    return TextField(
+      controller: controller,
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        hintText: 'Pesquisar serviço...',
+        prefixIcon: const Icon(Icons.search_rounded),
+        suffixIcon: value.isNotEmpty
+            ? IconButton(
+                icon: const Icon(Icons.close_rounded),
+                onPressed: () {
+                  controller.clear();
+                  onChanged('');
+                },
+              )
+            : null,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: AppColors.primary.withOpacity(0.22),
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: AppColors.primary.withOpacity(0.22),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: AppColors.primary.withOpacity(0.55),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ServicesList extends StatelessWidget {
+  final String query;
+
+  const _ServicesList({required this.query});
+
+  @override
+  Widget build(BuildContext context) {
+    final allServices = HomeClienteServicosModel.services;
+    final services = query.isEmpty
+        ? allServices
+        : allServices
+            .where(
+              (s) => s.title.toLowerCase().contains(query.toLowerCase()),
+            )
+            .toList();
 
     return LayoutBuilder(
       builder: (context, constraints) {
