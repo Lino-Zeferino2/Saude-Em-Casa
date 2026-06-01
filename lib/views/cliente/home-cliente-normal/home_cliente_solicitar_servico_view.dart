@@ -345,7 +345,9 @@ class _StepsMissingCard extends StatelessWidget {
                     child: Container(
                       height: 3,
                       decoration: BoxDecoration(
-                        color: lineColor(2),
+                        color: currentStep >= 2
+                            ? AppColors.primary
+                            : AppColors.textSecondary.withOpacity(0.25),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -363,7 +365,9 @@ class _StepsMissingCard extends StatelessWidget {
                     child: Container(
                       height: 3,
                       decoration: BoxDecoration(
-                        color: lineColor(3),
+                        color: currentStep >= 3
+                            ? AppColors.primary
+                            : AppColors.textSecondary.withOpacity(0.25),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
