@@ -51,7 +51,7 @@ class HomeClienteServicoDetalheView extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 34, vertical: 18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -77,15 +77,18 @@ class HomeClienteServicoDetalheView extends StatelessWidget {
                         const SizedBox(width: 14),
                         Expanded(
                           flex: 3,
-                          child: direita,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 36),
+                            child: direita,
+                          ),
                         ),
                       ],
                     ),
-              const SizedBox(height: 18),
+              const SizedBox(height: 28),
               _RelacionadosSection(
                 isMobile: isMobile,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 36),
               AppFooter(),
             ],
           ),
@@ -273,6 +276,7 @@ class _DetalheDireita extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            
             _InvestmentCardGrey(),
             const SizedBox(height: 12),
             _InfoCard(
@@ -311,6 +315,8 @@ class _DetalheDireita extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
+            _PreAvaliacaoAlert(),
+            const SizedBox(height: 10),
             Text(
               'Se não houver compromisso imediato, a nossa equipe entra em contacto para triagem apenas sem compromisso.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -325,40 +331,8 @@ class _DetalheDireita extends StatelessWidget {
   }
 }
 
-class _InvestmentHeader extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Investimento',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w900,
-                color: AppColors.textPrimary,
-              ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'A partir de 10.000 KZ',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w900,
-                color: AppColors.primary,
-              ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Valores podem variar conforme o serviço e frequência.',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-                height: 1.4,
-              ),
-        ),
-      ],
-    );
-  }
-}
 
+// ignore: unused_element
 class _InfoRow extends StatelessWidget {
   final String title;
   final String body;
@@ -473,6 +447,56 @@ class _InfoCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _PreAvaliacaoAlert extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.red.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.red.withOpacity(0.25),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(
+            Icons.warning_amber_rounded,
+            color: Colors.red,
+            size: 22,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Aviso importante',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.textPrimary,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Alguns dos serviços podem exigir avaliação médica antes de iniciar. Se você já tiver essa avaliação, ajude-nos levando a informação para nossa equipe.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                        height: 1.35,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
