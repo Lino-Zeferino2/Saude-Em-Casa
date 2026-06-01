@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../model/auth/login_model.dart';
+import '../../views/cliente/auth/register_view_v2.dart';
 
 class LoginController extends ChangeNotifier {
   LoginModel _state = const LoginModel();
@@ -67,8 +68,9 @@ class LoginController extends ChangeNotifier {
   }
 
   void onRegisterPressed(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Cadastra-se aqui (em breve)')),
+    // Navega para a tela de cadastro (Register V2)
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const RegisterViewV2()),
     );
   }
 }

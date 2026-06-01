@@ -11,6 +11,7 @@ import '../components/hero_header.dart';
 import '../components/publicacoes_section.dart';
 import '../components/services_horizontal_list.dart';
 import '../components/testemunhos_section.dart';
+import 'home_cliente_servicos_view.dart';
 
 class HomeClienteNormalView extends StatefulWidget {
   const HomeClienteNormalView({super.key});
@@ -92,11 +93,21 @@ class _HomeClienteNormalViewState extends State<HomeClienteNormalView> {
                                 ),
                       ),
                       onTap: () {
-                        Navigator.of(context).pop();
-                        setState(() => activeMenu = e);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Em breve: $e')),
+                      Navigator.of(context).pop();
+                      setState(() => activeMenu = e);
+
+                      if (e == 'Serviços') {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const HomeClienteServicosView(),
+                          ),
                         );
+                        return;
+                      }
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Em breve: $e')),
+                      );
                       },
                     );
                   }).toList(),
@@ -183,6 +194,16 @@ class _HomeClienteNormalViewState extends State<HomeClienteNormalView> {
               activeItem: activeMenu,
               onMenuSelected: (item) {
                 setState(() => activeMenu = item);
+
+                if (item == 'Serviços') {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const HomeClienteServicosView(),
+                    ),
+                  );
+                  return;
+                }
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Em breve: $item')),
                 );
