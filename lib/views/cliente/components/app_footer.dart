@@ -65,7 +65,7 @@ class _TopRow extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(18),
                 child: Image.asset(
-                  'logo.png',
+                  'assets/logo.png',
                   width: isNarrow ? 72 : 84,
                   height: isNarrow ? 72 : 84,
                   fit: BoxFit.contain,

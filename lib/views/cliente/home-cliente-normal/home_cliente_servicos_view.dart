@@ -6,6 +6,7 @@ import '../../../theme/app_colors.dart';
 
 import '../components/app_footer.dart';
 import '../components/app_menu.dart';
+import 'home_cliente_servico_detalhe_view.dart';
 
 class HomeClienteServicosView extends StatefulWidget {
   const HomeClienteServicosView({super.key});
@@ -329,8 +330,12 @@ class _ServicesList extends StatelessWidget {
               title: s.title,
               description: s.description,
               onVerDetalhes: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Em breve: $s.title')),
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => HomeClienteServicoDetalheView(
+                      service: s,
+                    ),
+                  ),
                 );
               },
             );
