@@ -412,6 +412,7 @@ class _PatientDataCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isOther = atendimentoTipo == 'Para outra pessoa';
+    final bool mobile = MediaQuery.of(context).size.width < 700;
 
     return _SectionCard(
       child: IgnorePointer(
@@ -497,24 +498,42 @@ class _PatientDataCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    flex: 1,
+                    flex: 2,
                     child: SizedBox(
                       height: 44,
-                      child: OutlinedButton.icon(
-                        onPressed: (novoEnabled && isOther)
-                            ? onNovoCliente
-                            : null,
-                        icon: const Icon(Icons.person_add_rounded),
-                        label: const Text('Novo'),
+                      child: OutlinedButton(
+                        onPressed: isOther ? onNovoCliente : null,
                         style: OutlinedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          padding: mobile
+                              ? const EdgeInsets.symmetric(vertical: 10)
+                              : const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 10,
+                                ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
                           side: BorderSide(
-                            color: AppColors.primary.withOpacity(0.4),
+                            color: isOther
+                                ? AppColors.primary.withOpacity(0.4)
+                                : AppColors.primary.withOpacity(0.15),
                           ),
                         ),
+                        child: mobile
+                            ? const Icon(Icons.person_add_rounded)
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  const Icon(Icons.person_add_rounded),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    'Novo',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.w900),
+                                  ),
+                                ],
+                              ),
                       ),
                     ),
                   ),
@@ -859,8 +878,8 @@ class _SupportCard extends StatelessWidget {
               icon: const Icon(Icons.chat_rounded),
               label: const Text('Falar com atendente'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
+                backgroundColor: const Color.fromARGB(255, 18, 39, 29).withOpacity(0.8),
+                foregroundColor: const Color.fromARGB(255, 190, 62, 62),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
@@ -885,26 +904,28 @@ class _RightAlignedNextButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 50,
+      height: 62,
       width: double.infinity,
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: SizedBox(
-          width: 220,
-          child: ElevatedButton(
-            onPressed: onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              textStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
-            ),
-            child: const Text('Próximo Passo'),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
           ),
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          textStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: const [
+            Text('Próximo Passo'),
+            SizedBox(width: 10),
+            Icon(Icons.arrow_forward_rounded),
+          ],
         ),
       ),
     );
