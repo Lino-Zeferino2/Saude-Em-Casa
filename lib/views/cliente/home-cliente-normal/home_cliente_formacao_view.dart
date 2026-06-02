@@ -134,7 +134,7 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
         ),
       );
       return;
-    } else if (normalized == 'serviços') {
+    } else if (normalized == 'Serviços') {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => const HomeClienteServicosView(),

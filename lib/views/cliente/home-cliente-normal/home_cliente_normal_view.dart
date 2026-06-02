@@ -211,6 +211,13 @@ class _HomeClienteNormalViewState extends State<HomeClienteNormalView> {
                     ),
                   );
                   return;
+                } else if (item == 'Formação') {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const HomeClienteFormacaoView(),
+                    ),
+                  );
+                  return;
                 }
 
                 ScaffoldMessenger.of(context).showSnackBar(
