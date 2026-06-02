@@ -115,9 +115,9 @@ class _HomeClienteSolicitarServicoViewState
               _StepsMissingCard(
                 currentStep: currentStep,
                 steps: const [
-                  'Passo 1 - Informações',
-                  'Passo 2 - Tipo de atendimento',
-                  'Passo 3 - Confirmação',
+                  '1 - Informações',
+                  '2 - Tipo de atendimento',
+                  '3 - Confirmação',
                 ],
               ),
 
@@ -230,35 +230,15 @@ class _HomeClienteSolicitarServicoViewState
                 )
 
               else if (isStep3)
-                Column(
-                  children: [
-                    _SectionCard(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Confirmação',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w900,
-                                    color: AppColors.textPrimary,
-                                  ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Pedido pronto para revisão (em breve).',
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: AppColors.textSecondary,
-                                  ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    _SupportCard(),
-                  ],
+                _Step3Confirmation(
+                  atendimentoTipo: atendimentoTipo,
+                  familiarSelecionado: familiarSelecionado,
+                  atendimentoSelecionado: atendimentoSelecionado,
+                  enderecoText: _enderecoController.text,
+                  dataText: _dataController.text,
+                  horaText: _horaController.text,
+                  mobile: mobile,
+                  onBack: _goBack,
                 ),
 
               const SizedBox(height: 24),
@@ -337,7 +317,8 @@ class _Step2TipoAtendimento extends StatelessWidget {
         onTap: () => onSelect(value),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(20),
+          constraints: const BoxConstraints(minHeight: 176),
           decoration: BoxDecoration(
             color: isSelected
                 ? AppColors.primary.withOpacity(0.10)
@@ -351,37 +332,33 @@ class _Step2TipoAtendimento extends StatelessWidget {
             ),
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(isSelected ? 0.14 : 0.10),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: AppColors.primary.withOpacity(isSelected ? 0.35 : 0.18),
-                      ),
-                    ),
-                    child: Icon(icon, color: AppColors.primary),
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(isSelected ? 0.14 : 0.10),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.primary.withOpacity(isSelected ? 0.35 : 0.18),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.textPrimary,
-                          ),
+                ),
+                child: Icon(icon, color: AppColors.primary, size: 22),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.textPrimary,
                     ),
-                  ),
-                ],
               ),
               const SizedBox(height: 10),
               Text(
                 description,
+                textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: AppColors.textSecondary,
                       height: 1.35,
@@ -523,6 +500,312 @@ class _Step2TipoAtendimento extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+class _Step3Confirmation extends StatelessWidget {
+  final String atendimentoTipo;
+  final String? familiarSelecionado;
+  final int atendimentoSelecionado; // 1 ou 2
+  final String enderecoText;
+  final String dataText;
+  final String horaText;
+  final bool mobile;
+  final VoidCallback onBack;
+
+  const _Step3Confirmation({
+    required this.atendimentoTipo,
+    required this.familiarSelecionado,
+    required this.atendimentoSelecionado,
+    required this.enderecoText,
+    required this.dataText,
+    required this.horaText,
+    required this.mobile,
+    required this.onBack,
+  });
+
+  String get _labelTipoServico {
+    if (atendimentoSelecionado == 1) return 'Atendimento único';
+    if (atendimentoSelecionado == 2) return 'Atendimento recorrente';
+    return '-';
+  }
+
+  String _safe(String value, {String fallback = '-'}) {
+    final v = value.trim();
+    return v.isEmpty ? fallback : v;
+  }
+
+  void _onEnviar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Enviar solicitação (em breve)')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final left = Column(
+      children: [
+        _ConfirmationGroupCard(
+          title: 'Paciente',
+          rows: const [
+            _SummaryRowItem(label: 'Nome', value: 'João Silva'),
+            _SummaryRowItem(label: 'Nº', value: '123 456 789'),
+            _SummaryRowItem(label: 'Email', value: 'paciente@email.com'),
+            _SummaryRowItem(label: 'Sexo', value: 'Masculino'),
+            _SummaryRowItem(label: 'Idade', value: '35 anos'),
+          ],
+        ),
+        const SizedBox(height: 14),
+        _ConfirmationGroupCard(
+          title: 'Tipo de serviço',
+          rows: [
+            _SummaryRowItem(label: 'Atendimento', value: _labelTipoServico),
+          ],
+        ),
+        const SizedBox(height: 14),
+        _ConfirmationGroupCard(
+          title: 'Endereço de atendimento',
+          rows: [
+            _SummaryRowItem(label: 'Endereço', value: _safe(enderecoText)),
+          ],
+        ),
+        const SizedBox(height: 14),
+        _ConfirmationGroupCard(
+          title: 'Data e Hora',
+          rows: [
+            _SummaryRowItem(label: 'Data', value: _safe(dataText)),
+            _SummaryRowItem(label: 'Hora', value: _safe(horaText)),
+          ],
+        ),
+      ],
+    );
+
+    final right = _FinancialSummaryCard(
+      totalKz: 'Kz 0,00',
+      onBack: onBack,
+      onEnviar: () => _onEnviar(context),
+    );
+
+    return Column(
+      children: [
+        if (mobile)
+          Column(
+            children: [
+              left,
+              const SizedBox(height: 14),
+              right,
+            ],
+          )
+        else
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(flex: 7, child: left),
+              const SizedBox(width: 14),
+              Expanded(flex: 3, child: right),
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+class _ConfirmationGroupCard extends StatelessWidget {
+  final String title;
+  final List<_SummaryRowItem> rows;
+
+  const _ConfirmationGroupCard({
+    required this.title,
+    required this.rows,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _SectionCard(
+      child: Padding(
+        padding: const EdgeInsets.all(2),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textPrimary,
+                  ),
+            ),
+            const SizedBox(height: 10),
+            ...rows.map(
+              (r) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _SummaryRow(item: r),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SummaryRowItem {
+  final String label;
+  final String value;
+
+  const _SummaryRowItem({required this.label, required this.value});
+}
+
+class _SummaryRow extends StatelessWidget {
+  final _SummaryRowItem item;
+
+  const _SummaryRow({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 120,
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Text(
+            item.label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.2,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            item.value,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                  height: 1.2,
+                  fontWeight: FontWeight.w800,
+                ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FinancialSummaryCard extends StatelessWidget {
+  final String totalKz;
+  final VoidCallback onBack;
+  final VoidCallback onEnviar;
+
+  const _FinancialSummaryCard({
+    required this.totalKz,
+    required this.onBack,
+    required this.onEnviar,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _SectionCard(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.blue.withOpacity(0.06),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Colors.blue.withOpacity(0.25),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Resumo financeiro',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textPrimary,
+                  ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Total estimado',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                ),
+                Text(
+                  totalKz,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.primary,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Text(
+              'O valor final será confirmado pela nossa equipa após avaliação.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.textSecondary,
+                    height: 1.4,
+                  ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  height: 42,
+                  child: OutlinedButton(
+                    onPressed: onBack,
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      side: BorderSide(
+                        color: AppColors.primary.withOpacity(0.35),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: const Text(
+                      'Voltar',
+                      style: TextStyle(fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 42,
+                  child: ElevatedButton(
+                    onPressed: onEnviar,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: const Text(
+                      'Enviar solicitação',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
