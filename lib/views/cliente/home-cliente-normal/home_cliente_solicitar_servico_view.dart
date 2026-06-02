@@ -19,6 +19,10 @@ class _HomeClienteSolicitarServicoViewState
   // Passo atual: 1 Informações, 2 Tipo de atendimento, 3 Confirmação
   int currentStep = 1;
 
+  // Passo 2: seleção do tipo de atendimento
+  // 0 = nenhum, 1 = Atendimento único, 2 = Atendimento recorrente
+  int atendimentoSelecionado = 0;
+
   // Dados placeholders
   String atendimentoTipo = 'Para mim';
   String? familiarSelecionado;
@@ -50,6 +54,12 @@ class _HomeClienteSolicitarServicoViewState
 
   void _goNext() {
     setState(() {
+      if (currentStep == 2) {
+        if (atendimentoSelecionado == 0) return;
+        currentStep = 3;
+        return;
+      }
+
       if (currentStep < 3) {
         currentStep++;
       } else {
@@ -57,6 +67,12 @@ class _HomeClienteSolicitarServicoViewState
           const SnackBar(content: Text('Confirmação (em breve)')),
         );
       }
+    });
+  }
+
+  void _goBack() {
+    setState(() {
+      if (currentStep > 1) currentStep--;
     });
   }
 
@@ -69,6 +85,10 @@ class _HomeClienteSolicitarServicoViewState
   @override
   Widget build(BuildContext context) {
     final mobile = _isMobile(context);
+
+    final bool isStep1 = currentStep == 1;
+    final bool isStep2 = currentStep == 2;
+    final bool isStep3 = currentStep == 3;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -103,58 +123,9 @@ class _HomeClienteSolicitarServicoViewState
 
               const SizedBox(height: 18),
 
-              if (mobile)
-                Column(
-                  children: [
-                    _PatientDataCard(
-                      locked: _lockedStep1,
-                      atendimentoTipo: atendimentoTipo,
-                      familiares: familiares,
-                      familiarSelecionado: familiarSelecionado,
-                      onTipoChanged: (v) => setState(() => atendimentoTipo = v),
-                      onFamiliarChanged: (v) =>
-                          setState(() => familiarSelecionado = v),
-                      onNovoCliente: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Novo cliente (em breve)')),
-                        );
-                      },
-                      // Novo habilita quando o dropdown estiver habilitado ("Para outra pessoa")
-                      novoEnabled: true,
-                    ),
-                    const SizedBox(height: 14),
-
-                    _SchedulingCard(
-                      locked: _lockedStep1,
-                      enderecosController: _enderecoController,
-                      localidadeController: _localidadeController,
-                      numeroController: _numeroController,
-                      dataController: _dataController,
-                      horaController: _horaController,
-                    ),
-                    const SizedBox(height: 14),
-
-                    _AdditionalInfoCard(
-                      locked: _lockedStep2,
-                      controller: _adicionaisController,
-                    ),
-                    const SizedBox(height: 14),
-
-                    _SupportCard(),
-                    const SizedBox(height: 14),
-
-                    _RightAlignedNextButton(onPressed: _goNext),
-                  ],
-                )
-              else
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Esquerda: flex 7
-                    Expanded(
-                      flex: 7,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+              if (isStep1)
+                (mobile
+                    ? Column(
                         children: [
                           _PatientDataCard(
                             locked: _lockedStep1,
@@ -166,14 +137,14 @@ class _HomeClienteSolicitarServicoViewState
                                 setState(() => familiarSelecionado = v),
                             onNovoCliente: () {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Novo cliente (em breve)')),
+                                const SnackBar(
+                                  content: Text('Novo cliente (em breve)'),
+                                ),
                               );
                             },
-                            // "Novo inativo a princípio"
-                            novoEnabled: false,
+                            novoEnabled: true,
                           ),
                           const SizedBox(height: 14),
-
                           _SchedulingCard(
                             locked: _lockedStep1,
                             enderecosController: _enderecoController,
@@ -183,29 +154,110 @@ class _HomeClienteSolicitarServicoViewState
                             horaController: _horaController,
                           ),
                           const SizedBox(height: 14),
-
-                          // Informações adicionais volta para a esquerda
                           _AdditionalInfoCard(
                             locked: _lockedStep2,
                             controller: _adicionaisController,
                           ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(width: 14),
-
-                    // Direita: flex 3 (suporte + próximo)
-                    Expanded(
-                      flex: 3,
-                      child: Column(
-                        children: [
+                          const SizedBox(height: 14),
                           _SupportCard(),
                           const SizedBox(height: 14),
                           _RightAlignedNextButton(onPressed: _goNext),
                         ],
+                      )
+                    : Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            flex: 7,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                _PatientDataCard(
+                                  locked: _lockedStep1,
+                                  atendimentoTipo: atendimentoTipo,
+                                  familiares: familiares,
+                                  familiarSelecionado: familiarSelecionado,
+                                  onTipoChanged: (v) => setState(() => atendimentoTipo = v),
+                                  onFamiliarChanged: (v) =>
+                                      setState(() => familiarSelecionado = v),
+                                  onNovoCliente: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Novo cliente (em breve)'),
+                                      ),
+                                    );
+                                  },
+                                  novoEnabled: false,
+                                ),
+                                const SizedBox(height: 14),
+                                _SchedulingCard(
+                                  locked: _lockedStep1,
+                                  enderecosController: _enderecoController,
+                                  localidadeController: _localidadeController,
+                                  numeroController: _numeroController,
+                                  dataController: _dataController,
+                                  horaController: _horaController,
+                                ),
+                                const SizedBox(height: 14),
+                                _AdditionalInfoCard(
+                                  locked: _lockedStep2,
+                                  controller: _adicionaisController,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            flex: 3,
+                            child: Column(
+                              children: [
+                                _SupportCard(),
+                                const SizedBox(height: 14),
+                                _RightAlignedNextButton(onPressed: _goNext),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ))
+
+              else if (isStep2)
+                _Step2TipoAtendimento(
+                  mobile: mobile,
+                  selected: atendimentoSelecionado,
+                  onSelect: (v) => setState(() => atendimentoSelecionado = v),
+                  onBack: _goBack,
+                  onNext: _goNext,
+                )
+
+              else if (isStep3)
+                Column(
+                  children: [
+                    _SectionCard(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Confirmação',
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    color: AppColors.textPrimary,
+                                  ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Pedido pronto para revisão (em breve).',
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+                    const SizedBox(height: 14),
+                    _SupportCard(),
                   ],
                 ),
 
@@ -247,6 +299,228 @@ class _PageIntro extends StatelessWidget {
                 color: AppColors.textSecondary,
                 height: 1.4,
               ),
+        ),
+      ],
+    );
+  }
+}
+
+class _Step2TipoAtendimento extends StatelessWidget {
+  final bool mobile;
+  final int selected; // 0,1,2
+  final ValueChanged<int> onSelect;
+  final VoidCallback onBack;
+  final VoidCallback onNext;
+
+  const _Step2TipoAtendimento({
+    required this.mobile,
+    required this.selected,
+    required this.onSelect,
+    required this.onBack,
+    required this.onNext,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bool canNext = selected != 0;
+
+    Widget optionCard({
+      required int value,
+      required IconData icon,
+      required String title,
+      required String description,
+    }) {
+      final bool isSelected = selected == value;
+
+      return InkWell(
+        borderRadius: BorderRadius.circular(18),
+        onTap: () => onSelect(value),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? AppColors.primary.withOpacity(0.10)
+                : Colors.white.withOpacity(0.85),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: isSelected
+                  ? AppColors.primary.withOpacity(0.45)
+                  : AppColors.primary.withOpacity(0.18),
+              width: 1,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(isSelected ? 0.14 : 0.10),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: AppColors.primary.withOpacity(isSelected ? 0.35 : 0.18),
+                      ),
+                    ),
+                    child: Icon(icon, color: AppColors.primary),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.textPrimary,
+                          ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                description,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                      height: 1.35,
+                      fontWeight: FontWeight.w500,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    Widget cardsLayout() {
+      if (mobile) {
+        return Column(
+          children: [
+            optionCard(
+              value: 1,
+              icon: Icons.medical_services_rounded,
+              title: 'Atendimento único',
+              description:
+                  'Uma visita para resolver o seu pedido com cuidado e acompanhamento direto.',
+            ),
+            const SizedBox(height: 12),
+            optionCard(
+              value: 2,
+              icon: Icons.autorenew_rounded,
+              title: 'Atendimento recorrente',
+              description:
+                  'Visitas regulares para manter o cuidado contínuo e evolução no tratamento.',
+            ),
+          ],
+        );
+      }
+
+      return Row(
+        children: [
+          Expanded(
+            child: optionCard(
+              value: 1,
+              icon: Icons.medical_services_rounded,
+              title: 'Atendimento único',
+              description:
+                  'Uma visita para resolver o seu pedido com cuidado e acompanhamento direto.',
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: optionCard(
+              value: 2,
+              icon: Icons.autorenew_rounded,
+              title: 'Atendimento recorrente',
+              description:
+                  'Visitas regulares para manter o cuidado contínuo e evolução no tratamento.',
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      children: [
+        _SectionCard(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Tipo de Atendimento',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.textPrimary,
+                        fontSize: 18,
+                      ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Escolha como o profissional vai realizar as visitas de cuidado:',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.textSecondary,
+                        height: 1.4,
+                      ),
+                ),
+                const SizedBox(height: 16),
+                cardsLayout(),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          height: 1,
+          width: double.infinity,
+          color: AppColors.primary.withOpacity(0.15),
+        ),
+        const SizedBox(height: 14),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: onBack,
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  side: BorderSide(
+                    color: AppColors.primary.withOpacity(0.35),
+                  ),
+                ),
+                child: const Text(
+                  'Voltar',
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ElevatedButton(
+                onPressed: canNext ? onNext : null,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  disabledBackgroundColor:
+                      AppColors.primary.withOpacity(0.35),
+                ),
+                child: const Text(
+                  'Próximo',
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
