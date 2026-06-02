@@ -6,6 +6,7 @@ import '../../../theme/app_colors.dart';
 
 import '../components/app_footer.dart';
 import '../components/app_menu.dart';
+import 'home_cliente_formacao_view.dart';
 import 'home_cliente_servico_detalhe_view.dart';
 
 class HomeClienteServicosView extends StatefulWidget {
@@ -25,10 +26,45 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
 
   bool get isMobile => MediaQuery.of(context).size.width < 700;
 
+  String _normalizeMenu(String s) {
+    final v = s.trim().toLowerCase();
+    return v
+        .replaceAll('á', 'a')
+        .replaceAll('à', 'a')
+        .replaceAll('ã', 'a')
+        .replaceAll('â', 'a')
+        .replaceAll('é', 'e')
+        .replaceAll('ê', 'e')
+        .replaceAll('í', 'i')
+        .replaceAll('ó', 'o')
+        .replaceAll('ô', 'o')
+        .replaceAll('õ', 'o')
+        .replaceAll('ú', 'u')
+        .replaceAll('ç', 'c');
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _handleMenuSelection(String item) {
+    setState(() => activeMenu = item);
+
+    final normalized = _normalizeMenu(item);
+    if (normalized == 'formacao') {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const HomeClienteFormacaoView(),
+        ),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Em breve: $item')),
+    );
   }
 
   @override
@@ -48,11 +84,10 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         'Saúde em Casa',
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w900,
-                                  color: AppColors.primary,
-                                ),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.primary,
+                            ),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -82,11 +117,8 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
                           selectedTileColor:
                               AppColors.primary.withOpacity(0.08),
                           onTap: () {
-                            setState(() => activeMenu = item);
                             Navigator.of(context).pop(); // fecha Drawer
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Em breve: $item')),
-                            );
+                            _handleMenuSelection(item);
                           },
                         );
                       },
@@ -115,10 +147,7 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
                 ],
                 activeItem: activeMenu,
                 onMenuSelected: (item) {
-                  setState(() => activeMenu = item);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Em breve: $item')),
-                  );
+                  _handleMenuSelection(item);
                 },
                 onLoginPressed: () {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -166,10 +195,7 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
               ],
               activeItem: activeMenu,
               onMenuSelected: (item) {
-                setState(() => activeMenu = item);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Em breve: $item')),
-                );
+                _handleMenuSelection(item);
               },
               onLoginPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -311,7 +337,6 @@ class _ServicesList extends StatelessWidget {
       builder: (context, constraints) {
         final double maxWidth = constraints.maxWidth;
 
-        // 4 colunas quando couber; caso contrário reduz para 2.
         final int crossAxisCount = maxWidth > 1200
             ? 6
             : maxWidth > 900
@@ -464,10 +489,7 @@ class _PersonalizedPlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 18,
-        vertical: 32,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 32),
       decoration: BoxDecoration(
         color: const Color(0xFF6BB6FF).withOpacity(0.10),
         borderRadius: BorderRadius.circular(22),
@@ -509,7 +531,6 @@ class _PersonalizedPlanCard extends StatelessWidget {
               final bool isMobileButtons = constraints.maxWidth < 700;
 
               if (isMobileButtons) {
-                // Mobile: botões um abaixo do outro
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -556,7 +577,6 @@ class _PersonalizedPlanCard extends StatelessWidget {
                 );
               }
 
-              // Web/desktop: botões lado a lado (mantém comportamento)
               return Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [

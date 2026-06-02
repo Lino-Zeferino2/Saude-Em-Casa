@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_formacao_view.dart';
 
 import '../../../controller/home_cliente_normal_controller.dart';
 import '../../../model/home_cliente_normal_model.dart';
@@ -100,6 +101,14 @@ class _HomeClienteNormalViewState extends State<HomeClienteNormalView> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const HomeClienteServicosView(),
+                          ),
+                        );
+                        return;
+                      }
+                     else if (e == 'Formação') {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const HomeClienteFormacaoView(),
                           ),
                         );
                         return;

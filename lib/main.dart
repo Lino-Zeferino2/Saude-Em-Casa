@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'theme/app_theme.dart';
-import 'views/cliente/home-cliente-normal/home_cliente_normal_view.dart';
 import 'views/splash/splash_view.dart';
 
 void main() {
