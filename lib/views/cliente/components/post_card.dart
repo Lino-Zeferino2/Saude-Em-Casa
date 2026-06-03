@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../../../theme/app_colors.dart';
-import '../../../theme/app_theme.dart';
-import '../../../model/home_cliente_normal_publicacoes_model.dart';
 import '../../../controller/home_cliente_normal_publicacoes_controller.dart';
-import 'primary_button.dart';
 
 class PostCard extends StatelessWidget {
   const PostCard({

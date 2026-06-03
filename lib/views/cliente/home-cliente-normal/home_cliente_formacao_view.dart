@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_servicos_view.dart';
-
 import '../../../theme/app_colors.dart';
+import '../components/app_footer.dart';
 import '../components/app_menu.dart';
 
 class HomeClienteFormacaoView extends StatefulWidget {
@@ -104,6 +103,12 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
 
   bool get isMobile => MediaQuery.of(context).size.width < 700;
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   String _normalizeMenu(String s) {
     final v = s.trim().toLowerCase();
     return v
@@ -126,18 +131,11 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
 
     setState(() => activeMenu = item);
 
-    // Somente "Formação" abre a tela; demais: em breve
+    // Apenas para demonstrar navegação; Formação abre esta tela
     if (normalized == 'formacao') {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => const HomeClienteFormacaoView(),
-        ),
-      );
-      return;
-    } else if (normalized == 'Serviços') {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => const HomeClienteServicosView(),
         ),
       );
       return;
@@ -146,12 +144,6 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Em breve: $item')),
     );
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
   }
 
   List<_Course> _filteredCourses() {
@@ -204,19 +196,13 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
                         return ListTile(
                           title: Text(
                             item,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyLarge
-                                ?.copyWith(
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                   fontWeight: FontWeight.w900,
-                                  color: selected
-                                      ? AppColors.primary
-                                      : AppColors.textPrimary,
+                                  color: selected ? AppColors.primary : AppColors.textPrimary,
                                 ),
                           ),
                           selected: selected,
-                          selectedTileColor:
-                              AppColors.primary.withOpacity(0.08),
+                          selectedTileColor: AppColors.primary.withOpacity(0.08),
                           onTap: () {
                             Navigator.of(context).pop();
                             _handleMenuSelection(item);
@@ -278,18 +264,7 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 4),
-              isMobile?
-                Text(
-                
-                'Formação e Capacitação',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.textPrimary,
-                      fontSize: isMobile ? 20 : 22,
-                    ),
-              ):
               Text(
-                
                 'Aprenda com profissionais e cuide com mais segurança.',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w900,
@@ -307,7 +282,6 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
               ),
               const SizedBox(height: 16),
 
-              // Barra de pesquisa
               TextField(
                 controller: _searchController,
                 onChanged: (v) => setState(() => _searchQuery = v),
@@ -353,23 +327,21 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
               LayoutBuilder(
                 builder: (context, constraints) {
                   final width = constraints.maxWidth;
-                  final gridCount = width > 1200
+
+                  final int desktopGridCount = width > 1200
                       ? 3
                       : width > 900
                           ? 2
                           : 1;
 
-                  // Ajuste responsivo para mobile: cards menores e mais colunas.
-                  // - <420px: 2 colunas
-                  // - <520px: 3 colunas
-                  // - >=520px (mobile): 4 colunas (se couber)
                   final int mobileGridCount = width < 420
                       ? 2
                       : width < 520
                           ? 3
                           : 4;
 
-                  final int effectiveGridCount = isMobile ? mobileGridCount : gridCount;
+                  final int effectiveGridCount =
+                      isMobile ? mobileGridCount : desktopGridCount;
 
                   return GridView.builder(
                     shrinkWrap: true,
@@ -388,8 +360,9 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) =>
-                                  HomeClienteFormacaoDetalheView(course: c),
+                              builder: (_) => HomeClienteFormacaoDetalheView(
+                                course: c,
+                              ),
                             ),
                           );
                         },
@@ -412,7 +385,7 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
               ],
 
               const SizedBox(height: 24),
-              
+              AppFooter(),
             ],
           ),
         ),
@@ -424,7 +397,7 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
 class HomeClienteFormacaoDetalheView extends StatelessWidget {
   final _Course course;
 
-  const HomeClienteFormacaoDetalheView({required this.course});
+  const HomeClienteFormacaoDetalheView({super.key, required this.course});
 
   @override
   Widget build(BuildContext context) {
@@ -480,9 +453,9 @@ class HomeClienteFormacaoDetalheView extends StatelessWidget {
               _PrimaryCtaRow(
                 isMobile: isMobile,
                 onEnroll: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Inscrição (em breve)'),
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => HomeClienteInscricaoCursoView(course: course),
                     ),
                   );
                 },
@@ -496,39 +469,846 @@ class HomeClienteFormacaoDetalheView extends StatelessWidget {
   }
 }
 
-class _PrimaryCtaRow extends StatelessWidget {
-  final bool isMobile;
-  final VoidCallback onEnroll;
+/// Tela de inscrição no curso (layout responsivo).
+class HomeClienteInscricaoCursoView extends StatefulWidget {
+  final _Course course;
 
-  const _PrimaryCtaRow({
-    required this.isMobile,
-    required this.onEnroll,
+  const HomeClienteInscricaoCursoView({super.key, required this.course});
+
+  @override
+  State<HomeClienteInscricaoCursoView> createState() => _HomeClienteInscricaoCursoViewState();
+}
+
+class _HomeClienteInscricaoCursoViewState extends State<HomeClienteInscricaoCursoView> {
+  bool _editandoDados = false;
+
+  final _nomeController = TextEditingController(text: 'Nome Sobrenome');
+  final _emailController = TextEditingController(text: 'email@exemplo.com');
+  final _telefoneController = TextEditingController(text: '912345678');
+
+  int _modoAcessoSelecionado = 0; // 0 imediato, 1 agendar
+  DateTime? _dataSelecionada;
+
+  bool _aceitouTermos = false;
+
+  final double _valorCurso = 120;
+  final double _descontoEspecial = 20;
+  double get _valorFinal => _valorCurso - _descontoEspecial;
+
+  List<DateTime> get _datasDisponiveis {
+    final now = DateTime.now();
+    final list = <DateTime>[];
+    DateTime d = DateTime(now.year, now.month, now.day);
+    while (list.length < 8) {
+      d = d.add(const Duration(days: 1));
+      final wd = d.weekday;
+      if (wd == DateTime.monday || wd == DateTime.tuesday) {
+        list.add(d);
+      }
+    }
+    return list;
+  }
+
+  void _confirmarInscricao() {
+    if (!_aceitouTermos) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Você precisa aceitar os termos.')),
+      );
+      return;
+    }
+    if (_modoAcessoSelecionado == 1 && _dataSelecionada == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Selecione uma data para agendar início.')),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Inscrição confirmada! (em breve)')),
+    );
+  }
+
+  @override
+  void dispose() {
+    _nomeController.dispose();
+    _emailController.dispose();
+    _telefoneController.dispose();
+    super.dispose();
+  }
+
+  String _fmt(DateTime d) {
+    const months = {
+      1: 'Jan', 2: 'Fev', 3: 'Mar', 4: 'Abr', 5: 'Mai', 6: 'Jun',
+      7: 'Jul', 8: 'Ago', 9: 'Set', 10: 'Out', 11: 'Nov', 12: 'Dez',
+    };
+    return '${d.day} ${months[d.month]}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isMobile = MediaQuery.of(context).size.width < 700;
+    final course = widget.course;
+
+    final descriptionSimple = course.description.length > 110
+        ? '${course.description.substring(0, 110)}...'
+        : course.description;
+
+    final left = _InscricaoLeftCard(
+      course: course,
+      editandoDados: _editandoDados,
+      modoAcessoSelecionado: _modoAcessoSelecionado,
+      dataSelecionada: _dataSelecionada,
+      datasDisponiveis: _datasDisponiveis,
+      aceitouTermos: _aceitouTermos,
+      nomeController: _nomeController,
+      emailController: _emailController,
+      telefoneController: _telefoneController,
+      onToggleEdit: () => setState(() => _editandoDados = !_editandoDados),
+      onChangeModoAcesso: (v) {
+        setState(() {
+          _modoAcessoSelecionado = v;
+          if (v == 0) _dataSelecionada = null;
+        });
+      },
+      onSelectData: (d) => setState(() => _dataSelecionada = d),
+      onToggleAceitouTermos: (v) => setState(() => _aceitouTermos = v),
+      onConfirm: _confirmarInscricao,
+    );
+
+    final right = _InscricaoResumoCard(
+      course: course,
+      descriptionSimple: descriptionSimple,
+      valorCurso: _valorCurso,
+      descontoEspecial: _descontoEspecial,
+      valorFinal: _valorFinal,
+      aceitouTermos: _aceitouTermos,
+      onConfirm: _confirmarInscricao,
+    );
+
+    if (isMobile) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        appBar: AppBar(
+          backgroundColor: Colors.white.withOpacity(0.96),
+          foregroundColor: AppColors.textPrimary,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          title: const Text('Inscrição'),
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Column(
+              children: [
+                left,
+                const SizedBox(height: 14),
+                right,
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: Colors.white.withOpacity(0.96),
+        foregroundColor: AppColors.textPrimary,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        title: const Text('Inscrição'),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final maxW = constraints.maxWidth;
+              final leftW = maxW * 0.70; // 7/3
+              final rightW = maxW * 0.30;
+
+              // Usa Expanded em vez de SizedBox com largura fixa para evitar
+              // overflow quando a composição do layout (padding/textos) não
+              // cabe perfeitamente no "rightW" calculado.
+              if (maxW < 1100) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(width: maxW, child: left),
+                    const SizedBox(height: 14),
+                    SizedBox(width: maxW, child: right),
+                  ],
+                );
+              }
+
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(flex: 7, child: left),
+                  const SizedBox(width: 14),
+                  Expanded(flex: 3, child: right),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InscricaoLeftCard extends StatelessWidget {
+  final _Course course;
+  final bool editandoDados;
+  final int modoAcessoSelecionado;
+  final DateTime? dataSelecionada;
+  final List<DateTime> datasDisponiveis;
+  final bool aceitouTermos;
+
+  final TextEditingController nomeController;
+  final TextEditingController emailController;
+  final TextEditingController telefoneController;
+
+  final VoidCallback onToggleEdit;
+  final ValueChanged<int> onChangeModoAcesso;
+  final ValueChanged<DateTime> onSelectData;
+  final ValueChanged<bool> onToggleAceitouTermos;
+  final VoidCallback onConfirm;
+
+  const _InscricaoLeftCard({
+    required this.course,
+    required this.editandoDados,
+    required this.modoAcessoSelecionado,
+    required this.dataSelecionada,
+    required this.datasDisponiveis,
+    required this.aceitouTermos,
+    required this.nomeController,
+    required this.emailController,
+    required this.telefoneController,
+    required this.onToggleEdit,
+    required this.onChangeModoAcesso,
+    required this.onSelectData,
+    required this.onToggleAceitouTermos,
+    required this.onConfirm,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: SizedBox(
-            height: 48,
-            child: FilledButton(
-              onPressed: onEnroll,
-              style: FilledButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 18),
+        _Card(
+          title: 'Confirmação de dados',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: _Field(
+                      label: 'Nome completo',
+                      controller: nomeController,
+                      enabled: editandoDados,
+                      keyboardType: TextInputType.name,
+                      icon: Icons.person_outline_rounded,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _Field(
+                      label: 'Email',
+                      controller: emailController,
+                      enabled: editandoDados,
+                      keyboardType: TextInputType.emailAddress,
+                      icon: Icons.mail_outline_rounded,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _Field(
+                      label: 'Número de telemóvel',
+                      controller: telefoneController,
+                      enabled: editandoDados,
+                      keyboardType: TextInputType.phone,
+                      icon: Icons.phone_android_rounded,
+                    ),
+                  ),
+                ],
               ),
-              child: const Text(
-                'Quero me inscrever',
-                style: TextStyle(fontWeight: FontWeight.w900),
+              const SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: onToggleEdit,
+                  icon: Icon(
+                    editandoDados ? Icons.check_rounded : Icons.edit_outlined,
+                    color: AppColors.primary,
+                  ),
+                  label: Text(
+                    editandoDados ? 'Concluir' : 'Editar',
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
+        _Card(
+          title: 'Forma de acesso',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _AccessOption(
+                selected: modoAcessoSelecionado == 0,
+                title: 'Acesso imediato',
+                description:
+                    'Receba os materiais e comece sua formação no mesmo dia (em breve).',
+                onTap: () => onChangeModoAcesso(0),
+                icon: Icons.play_circle_outline_rounded,
+              ),
+              const SizedBox(height: 12),
+              _AccessOption(
+                selected: modoAcessoSelecionado == 1,
+                title: 'Agendar início',
+                description: 'Escolha uma data disponível para iniciar sua formação.',
+                onTap: () => onChangeModoAcesso(1),
+                icon: Icons.calendar_month_outlined,
+              ),
+              if (modoAcessoSelecionado == 1) ...[
+                const SizedBox(height: 12),
+                _DatePickerChipRow(
+                  selected: dataSelecionada,
+                  dates: datasDisponiveis,
+                  onSelected: onSelectData,
+                ),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
+        _Card(
+          title: 'Termos de Compromisso',
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.primary.withOpacity(0.14),
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: const [
+                    _TermLine(text: '1) Eu entendo que este é um processo de inscrição (em breve).'),
+                    _TermLine(text: '2) Eu concordo em receber comunicação relacionada à minha formação.'),
+                    _TermLine(text: '3) Eu confirmo que os dados fornecidos são corretos.'),
+                    _TermLine(text: '4) Eu entendo que a confirmação final pode depender de validação.'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              CheckboxListTile(
+                value: aceitouTermos,
+                onChanged: (v) => onToggleAceitouTermos(v ?? false),
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+                title: const Text(
+                  'Li e aceito os termos de compromisso.',
+                  style: TextStyle(fontWeight: FontWeight.w700),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _InscricaoResumoCard extends StatelessWidget {
+  final _Course course;
+  final String descriptionSimple;
+  final double valorCurso;
+  final double descontoEspecial;
+  final double valorFinal;
+  final bool aceitouTermos;
+  final VoidCallback onConfirm;
+
+  const _InscricaoResumoCard({
+    required this.course,
+    required this.descriptionSimple,
+    required this.valorCurso,
+    required this.descontoEspecial,
+    required this.valorFinal,
+    required this.aceitouTermos,
+    required this.onConfirm,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.92),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.18),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 14,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Cabeçalho sem Row
+          Wrap(
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: 12,
+            runSpacing: 6,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: AppColors.primary.withOpacity(0.22),
+                    width: 1,
+                  ),
+                ),
+                child: const Icon(Icons.school_rounded,
+                    color: AppColors.primary, size: 22),
+              ),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 240),
+                child: Text(
+                  course.title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                      ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 8),
+          Text(
+            descriptionSimple,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.35,
+                ),
+          ),
+
+          const SizedBox(height: 10),
+          Text(
+            'Carga horária: ${course.duration}',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
+          ),
+
+          const SizedBox(height: 14),
+          Divider(color: AppColors.primary.withOpacity(0.22)),
+          const SizedBox(height: 12),
+
+          _MoneyRow(
+            label: 'Valor do curso',
+            value: '€ ${valorCurso.toStringAsFixed(0)}',
+          ),
+          const SizedBox(height: 8),
+
+          _MoneyRow(
+            label: 'Desconto especial',
+            value: '-€ ${descontoEspecial.toStringAsFixed(0)}',
+            valueColor: AppColors.primary,
+          ),
+          const SizedBox(height: 8),
+
+          _MoneyRow(
+            label: 'Valor final',
+            value: '€ ${valorFinal.toStringAsFixed(0)}',
+            valueStrong: true,
+          ),
+
+          const SizedBox(height: 12),
+          Divider(color: AppColors.primary.withOpacity(0.22)),
+          const SizedBox(height: 12),
+
+          // Botão centralizado sem Row
+          SizedBox(
+            height: 52,
+            child: Center(
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: onConfirm,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: const Text(
+                    'Confirmar inscrição',
+                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+          Text(
+            'Vamos entrar em ctt para dar o seguimento da sua formação.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.4,
+                  fontWeight: FontWeight.w600,
+                ),
+            textAlign: TextAlign.center,
+          ),
+
+          if (!aceitouTermos)
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Text(
+                'Aceite os termos para confirmar.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MoneyRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool valueStrong;
+  final Color? valueColor;
+
+  const _MoneyRow({
+    required this.label,
+    required this.value,
+    this.valueStrong = false,
+    this.valueColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+        const SizedBox(height: 4),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.right,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight:
+                      valueStrong ? FontWeight.w900 : FontWeight.w800,
+                  color: valueColor ?? AppColors.textPrimary,
+                ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TermLine extends StatelessWidget {
+  final String text;
+
+  const _TermLine({required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColors.textSecondary,
+              height: 1.35,
+              fontWeight: FontWeight.w700,
+            ),
+      ),
+    );
+  }
+}
+
+class _Card extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const _Card({required this.title, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.92),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.18),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 12,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.textPrimary,
+                ),
+          ),
+          const SizedBox(height: 12),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _Field extends StatelessWidget {
+  final String label;
+  final TextEditingController controller;
+  final bool enabled;
+  final TextInputType keyboardType;
+  final IconData icon;
+
+  const _Field({
+    required this.label,
+    required this.controller,
+    required this.enabled,
+    required this.keyboardType,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w700,
+              ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          enabled: enabled,
+          keyboardType: keyboardType,
+          decoration: InputDecoration(
+            prefixIcon: Icon(icon, size: 18, color: AppColors.primary),
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 12,
+            ),
+            filled: true,
+            fillColor: Colors.white.withOpacity(0.9),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(
+                color: AppColors.primary.withOpacity(0.22),
+              ),
+            ),
+            disabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(
+                color: AppColors.primary.withOpacity(0.16),
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(
+                color: AppColors.primary.withOpacity(0.22),
               ),
             ),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _AccessOption extends StatelessWidget {
+  final bool selected;
+  final String title;
+  final String description;
+  final VoidCallback onTap;
+  final IconData icon;
+
+  const _AccessOption({
+    required this.selected,
+    required this.title,
+    required this.description,
+    required this.onTap,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(16),
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary.withOpacity(0.10) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: selected
+                ? AppColors.primary.withOpacity(0.34)
+                : AppColors.primary.withOpacity(0.14),
+            width: 1,
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              icon,
+              color: selected ? AppColors.primary : AppColors.textSecondary,
+              size: 20,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textPrimary,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                          height: 1.35,
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              selected
+                  ? Icons.check_circle_rounded
+                  : Icons.radio_button_unchecked_rounded,
+              color: selected ? AppColors.primary : AppColors.textSecondary,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DatePickerChipRow extends StatelessWidget {
+  final DateTime? selected;
+  final List<DateTime> dates;
+  final ValueChanged<DateTime> onSelected;
+
+  const _DatePickerChipRow({
+    required this.selected,
+    required this.dates,
+    required this.onSelected,
+  });
+
+  String _fmt(DateTime d) {
+    const months = {
+      1: 'Jan', 2: 'Fev', 3: 'Mar', 4: 'Abr', 5: 'Mai', 6: 'Jun',
+      7: 'Jul', 8: 'Ago', 9: 'Set', 10: 'Out', 11: 'Nov', 12: 'Dez',
+    };
+    return '${d.day} ${months[d.month]}';
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: [
+        for (final d in dates)
+          ChoiceChip(
+            label: Text(_fmt(d)),
+            selected: selected != null && _isSameDay(selected!, d),
+            selectedColor: AppColors.primary.withOpacity(0.16),
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+              side: BorderSide(
+                color: selected != null && _isSameDay(selected!, d)
+                    ? AppColors.primary.withOpacity(0.55)
+                    : AppColors.primary.withOpacity(0.18),
+              ),
+            ),
+            onSelected: (_) => onSelected(d),
+          )
       ],
     );
   }
@@ -645,8 +1425,8 @@ class _CourseCard extends StatelessWidget {
                       width: 1,
                     ),
                   ),
-                  child:
-                      const Icon(Icons.school_rounded, color: AppColors.primary),
+                  child: const Icon(Icons.school_rounded,
+                      color: AppColors.primary),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -758,6 +1538,44 @@ class _BulletRow extends StatelessWidget {
                   height: 1.4,
                   fontWeight: FontWeight.w700,
                 ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PrimaryCtaRow extends StatelessWidget {
+  final bool isMobile;
+  final VoidCallback onEnroll;
+
+  const _PrimaryCtaRow({
+    required this.isMobile,
+    required this.onEnroll,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 48,
+            child: FilledButton(
+              onPressed: onEnroll,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+              ),
+              child: const Text(
+                'Quero me inscrever',
+                style: TextStyle(fontWeight: FontWeight.w900),
+              ),
+            ),
           ),
         ),
       ],
