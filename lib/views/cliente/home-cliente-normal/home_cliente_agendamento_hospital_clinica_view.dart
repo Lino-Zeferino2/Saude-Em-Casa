@@ -23,9 +23,8 @@ class HomeClienteAgendamentoHospitalClinicaView extends StatefulWidget {
 
 class _HomeClienteAgendamentoHospitalClinicaViewState
     extends State<HomeClienteAgendamentoHospitalClinicaView> {
-  bool get _isMobile => MediaQuery.of(context).size.width < 700;
+  bool get isMobile => MediaQuery.of(context).size.width < 700;
 
-  // Simples placeholders (sem backend).
   final _formKey = GlobalKey<FormState>();
 
   final _nomeController = TextEditingController();
@@ -81,13 +80,13 @@ class _HomeClienteAgendamentoHospitalClinicaViewState
       dateController: _dateController,
       observationsController: _observationsController,
       onConfirm: () {
-        // Valida campos básicos.
         final ok = _formKey.currentState?.validate() ?? false;
         if (!ok) return;
 
-        final snackText = 'Confirmação enviada (termos aceites).';
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(snackText)),
+          const SnackBar(
+            content: Text('Confirmação enviada (termos aceites).'),
+          ),
         );
       },
     );
@@ -108,7 +107,7 @@ class _HomeClienteAgendamentoHospitalClinicaViewState
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 6),
-              _isMobile
+              isMobile
                   ? Column(
                       children: [
                         left,
@@ -125,7 +124,6 @@ class _HomeClienteAgendamentoHospitalClinicaViewState
                       ],
                     ),
               const SizedBox(height: 18),
-              // Footer simples (sem depender de outro arquivo)
               Center(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -422,7 +420,7 @@ class _SolicitarHorarioCard extends StatelessWidget {
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                )
+                ),
               ],
             ),
 
@@ -450,6 +448,7 @@ class _SolicitarHorarioCard extends StatelessWidget {
               },
               prefixIcon: Icons.person_rounded,
             ),
+
             const SizedBox(height: 12),
             _FormTextField(
               enabled: editing,
@@ -465,6 +464,7 @@ class _SolicitarHorarioCard extends StatelessWidget {
               },
               prefixIcon: Icons.email_rounded,
             ),
+
             const SizedBox(height: 12),
             _FormTextField(
               enabled: editing,
@@ -482,8 +482,14 @@ class _SolicitarHorarioCard extends StatelessWidget {
 
             const SizedBox(height: 14),
 
+            // Dropdown apenas visual: a seleção real acontece nos chips à esquerda.
             DropdownButtonFormField<String>(
               value: selectedSpecialty,
+              onChanged: (v) {
+                // Não altera nada quando estiver em modo "non-edit";
+                // a seleção é feita pelos chips (lista horizontal à esquerda).
+                if (!editing) return;
+              },
               decoration: InputDecoration(
                 labelText: 'Especialidade',
                 border: OutlineInputBorder(
@@ -504,18 +510,20 @@ class _SolicitarHorarioCard extends StatelessWidget {
                     ),
                   )
                   .toList(),
-              onChanged: null, // controlado pela lista horizontal à esquerda
               validator: (v) {
-                if (v == null) return 'Selecione uma especialidade.';
+                // A seleção pode ser opcional.
                 return null;
               },
             ),
+
 
             const SizedBox(height: 12),
 
             TextFormField(
               controller: dateController,
               readOnly: false,
+              enabled: true,
+
               decoration: InputDecoration(
                 labelText: 'Data',
                 hintText: 'DD/MM/AAAA',
@@ -532,16 +540,16 @@ class _SolicitarHorarioCard extends StatelessWidget {
               ),
               validator: (v) {
                 final value = v?.trim() ?? '';
-                if (value.isEmpty) return 'Informe a data.';
+                if (value.isEmpty) return null;
                 return null;
               },
             ),
 
             const SizedBox(height: 12),
-
             TextFormField(
               controller: observationsController,
               maxLines: 5,
+              enabled: true,
               decoration: InputDecoration(
                 labelText: 'Observações',
                 hintText:
@@ -559,7 +567,6 @@ class _SolicitarHorarioCard extends StatelessWidget {
             ),
 
             const SizedBox(height: 14),
-
             Text(
               'Ao confirmar, concorda com a partilha de dados pessoais para processamento com instituições terceiros.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
