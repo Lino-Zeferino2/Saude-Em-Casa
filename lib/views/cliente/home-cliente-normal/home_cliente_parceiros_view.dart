@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../theme/app_colors.dart';
 import '../components/app_footer.dart';
 import '../components/app_menu.dart';
+import 'home_cliente_agendamento_hospital_clinica_view.dart';
 
 class HomeClienteParceirosView extends StatefulWidget {
   const HomeClienteParceirosView({super.key});
@@ -302,6 +303,21 @@ class _HomeClienteParceirosViewState extends State<HomeClienteParceirosView> {
                     return _PartnerCard(
                       partner: p,
                       onDetails: () {
+                        // Apenas Hospital/Clínica abre a tela de agendamento.
+                        if (p.tag == 'Hospitais' || p.tag == 'Clinicas') {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => HomeClienteAgendamentoHospitalClinicaView(
+                                partnerName: p.title,
+                                partnerAddress: 'Localização: ${p.location}',
+                                assetImage: p.assetImage,
+                                partnerCategoryLabel: p.categoryLabel,
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Em breve: Ver detalhes')),
                         );
