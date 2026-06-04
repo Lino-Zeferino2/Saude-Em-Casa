@@ -4,6 +4,8 @@ import '../../../theme/app_colors.dart';
 import '../components/app_footer.dart';
 import '../components/app_menu.dart';
 import 'home_cliente_agendamento_hospital_clinica_view.dart';
+import 'home_cliente_farmacia_view.dart';
+
 
 class HomeClienteParceirosView extends StatefulWidget {
   const HomeClienteParceirosView({super.key});
@@ -303,7 +305,7 @@ class _HomeClienteParceirosViewState extends State<HomeClienteParceirosView> {
                     return _PartnerCard(
                       partner: p,
                       onDetails: () {
-                        // Apenas Hospital/Clínica abre a tela de agendamento.
+                        // Hospital/Clínica abre agendamento.
                         if (p.tag == 'Hospitais' || p.tag == 'Clinicas') {
                           Navigator.of(context).push(
                             MaterialPageRoute(
@@ -312,6 +314,26 @@ class _HomeClienteParceirosViewState extends State<HomeClienteParceirosView> {
                                 partnerAddress: 'Localização: ${p.location}',
                                 assetImage: p.assetImage,
                                 partnerCategoryLabel: p.categoryLabel,
+                              ),
+                            ),
+                          );
+                          return;
+                        }
+
+                        // Farmácia abre tela de farmácia (demo).
+                        if (p.tag == 'Farmacias') {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => HomeClienteFarmaciaView(
+                                farmaciaName: p.title,
+                                farmaciaAddress: 'Localização: ${p.location}',
+                                assetImage: p.assetImage,
+                                clienteName: 'Cliente (demo)',
+                                clientePhone: '(demo)',
+                                clienteEmail: '(demo@email.com)',
+                                entregaRua: 'Rua (demo)',
+                                entregaCidade: p.location,
+                                entregaCodigoPostal: '0000-000',
                               ),
                             ),
                           );
