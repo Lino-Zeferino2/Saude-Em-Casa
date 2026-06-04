@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
 import '../cliente/home-cliente-normal/home_cliente_normal_view.dart';
+import '../cliente/home-cliente-normal/home_cliente_facil_view.dart';
+
 import '_dots_loading.dart';
+
+
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -107,7 +111,7 @@ class _SplashViewState extends State<SplashView> {
                           onTap: () {
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                builder: (_) => const HomeClienteNormalView(),
+                                builder: (_) => const HomeClienteFacilView(),
                               ),
                             );
                           },
