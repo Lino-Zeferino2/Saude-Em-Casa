@@ -3,15 +3,11 @@ import 'package:flutter/material.dart';
 import '../../../theme/app_colors.dart';
 import 'home_cliente_normal_view.dart';
 
-
-/// Home-Cliente modo Fácil (idosos / baixa familiaridade com apps)
 class HomeClienteFacilView extends StatelessWidget {
   const HomeClienteFacilView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isMobile = MediaQuery.of(context).size.width < 700;
-
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -55,7 +51,6 @@ class HomeClienteFacilView extends StatelessWidget {
         actions: [
           TextButton.icon(
             onPressed: () {
-              // Navegação para modo normal (mantém app atual como destino).
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
                   builder: (_) => const HomeClienteNormalView(),
@@ -88,75 +83,58 @@ class HomeClienteFacilView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Top: ações grandes e legíveis
-                  isMobile
-                      ? Column(
-                          children: [
-                            _BigRowActions(
-                              actions: [
-                                _BigAction(
-                                  icon: Icons.chat_bubble_rounded,
-                                  title: 'Falar com app',
-                                  subtitle: 'Tire dúvidas (demo)',
-                                  onTap: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Falar com app (em breve)')),
-                                    );
-                                  },
-                                ),
-                                _BigAction(
-                                  icon: Icons.volume_up_rounded,
-                                  title: 'Ouvir a página',
-                                  subtitle: 'Leitura em voz alta (demo)',
-                                  onTap: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text('Ouvir a página (em breve)')),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
-                        )
-                      : Row(
-                          children: [
-                            Expanded(
-                              child: _BigRowActions(
-                                actions: [
-                                  _BigAction(
-                                    icon: Icons.chat_bubble_rounded,
-                                    title: 'Falar com app',
-                                    subtitle: 'Tire dúvidas (demo)',
-                                    onTap: () {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Falar com app (em breve)')),
-                                      );
-                                    },
-                                  ),
-                                  _BigAction(
-                                    icon: Icons.volume_up_rounded,
-                                    title: 'Ouvir a página',
-                                    subtitle: 'Leitura em voz alta (demo)',
-                                    onTap: () {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Ouvir a página (em breve)')),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                  // Título
+                  Text(
+                    'Olá! Como a saúde em Casa pode lhe ajudar hoje?',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.textPrimary,
                         ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Falar / Ouvir (mesma linha)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _BigRowActionCard(
+                          icon: Icons.mic,
+                          color: Colors.blue,
+                          title: 'Falar com app',
+                          subtitle: 'Tire dúvidas (demo)',
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Falar com app (em breve)')),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _BigRowActionCard(
+                          icon: Icons.volume_up_rounded,
+                          color: Colors.green,
+                          title: 'Ouvir a página',
+                          subtitle: 'Leitura em voz alta (demo)',
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Ouvir a página (em breve)')),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
 
                   const SizedBox(height: 16),
 
-                  // Lista principal: botões grandes
+                  // Cards principais
                   _BigMenuList(
                     items: [
                       _BigMenuItem(
                         icon: Icons.local_hospital_rounded,
                         title: 'Solicitar Serviços',
+                        accentColor: Colors.blue,
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Solicitar Serviços (em breve)')),
@@ -166,6 +144,7 @@ class HomeClienteFacilView extends StatelessWidget {
                       _BigMenuItem(
                         icon: Icons.receipt_long_rounded,
                         title: 'Ver meus pedidos',
+                        accentColor: Colors.blue,
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Ver meus pedidos (em breve)')),
@@ -175,6 +154,7 @@ class HomeClienteFacilView extends StatelessWidget {
                       _BigMenuItem(
                         icon: Icons.help_outline_rounded,
                         title: 'Pedir ajuda',
+                        accentColor: Colors.green,
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Pedir ajuda (em breve)')),
@@ -186,14 +166,28 @@ class HomeClienteFacilView extends StatelessWidget {
 
                   const SizedBox(height: 16),
 
-                  // Bloco final: instruções (melhor UX)
-                  _SupportTips(
-                    tips: [
-                      'Se tiver dificuldade, use “Ouvir a página”.',
-                      'Use “Falar com app” para tirar dúvidas.',
-                      'Botões grandes para facilitar a leitura.',
-                    ],
+                  // Pequenas dicas (opcional para UX)
+                  Card(
+                    color: Colors.white.withOpacity(0.92),
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      side: BorderSide(color: AppColors.primary.withOpacity(0.18)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        'Dica: use “Ouvir a página” se tiver dificuldade para ler. Use os botões grandes para seguir passo a passo.',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: AppColors.textSecondary,
+                              height: 1.35,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                    ),
                   ),
+
+                  const SizedBox(height: 24),
                 ],
               ),
             ),
@@ -204,44 +198,20 @@ class HomeClienteFacilView extends StatelessWidget {
   }
 }
 
-
-
-class _BigRowActions extends StatelessWidget {
-  final List<_BigAction> actions;
-  const _BigRowActions({required this.actions});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: actions
-          .map(
-            (a) => Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: _BigActionCard(action: a),
-            ),
-          )
-          .toList(),
-    );
-  }
-}
-
-class _BigAction {
+class _BigRowActionCard extends StatelessWidget {
   final IconData icon;
+  final Color color;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
 
-  const _BigAction({
+  const _BigRowActionCard({
     required this.icon,
+    required this.color,
     required this.title,
     required this.subtitle,
     required this.onTap,
   });
-}
-
-class _BigActionCard extends StatelessWidget {
-  final _BigAction action;
-  const _BigActionCard({required this.action});
 
   @override
   Widget build(BuildContext context) {
@@ -252,11 +222,11 @@ class _BigActionCard extends StatelessWidget {
         elevation: 1,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: BorderSide(color: AppColors.primary.withOpacity(0.18)),
+          side: BorderSide(color: color.withOpacity(0.45)),
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
-          onTap: action.onTap,
+          onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
@@ -265,11 +235,11 @@ class _BigActionCard extends StatelessWidget {
                   width: 54,
                   height: 54,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.10),
+                    color: color.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.primary.withOpacity(0.18)),
+                    border: Border.all(color: color.withOpacity(0.25)),
                   ),
-                  child: Icon(action.icon, size: 26, color: AppColors.primary),
+                  child: Icon(icon, size: 26, color: color),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -278,7 +248,7 @@ class _BigActionCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        action.title,
+                        title,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.w900,
                               color: AppColors.textPrimary,
@@ -286,7 +256,7 @@ class _BigActionCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        action.subtitle,
+                        subtitle,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
@@ -329,11 +299,13 @@ class _BigMenuList extends StatelessWidget {
 class _BigMenuItem {
   final IconData icon;
   final String title;
+  final Color accentColor;
   final VoidCallback onTap;
 
   const _BigMenuItem({
     required this.icon,
     required this.title,
+    required this.accentColor,
     required this.onTap,
   });
 }
@@ -351,7 +323,7 @@ class _BigMenuButton extends StatelessWidget {
         elevation: 1,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
-          side: BorderSide(color: AppColors.primary.withOpacity(0.18)),
+          side: BorderSide(color: item.accentColor.withOpacity(0.35)),
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
@@ -364,11 +336,11 @@ class _BigMenuButton extends StatelessWidget {
                   width: 54,
                   height: 54,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.10),
+                    color: item.accentColor.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.primary.withOpacity(0.18)),
+                    border: Border.all(color: item.accentColor.withOpacity(0.25)),
                   ),
-                  child: Icon(item.icon, size: 26, color: AppColors.primary),
+                  child: Icon(item.icon, size: 26, color: item.accentColor),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -384,50 +356,6 @@ class _BigMenuButton extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SupportTips extends StatelessWidget {
-  final List<String> tips;
-  const _SupportTips({required this.tips});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white.withOpacity(0.92),
-      elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-        side: BorderSide(color: AppColors.primary.withOpacity(0.18)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Dicas rápidas',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.textPrimary,
-                  ),
-            ),
-            const SizedBox(height: 10),
-            ...tips.map((t) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Text(
-                    t,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textSecondary,
-                          height: 1.35,
-                          fontWeight: FontWeight.w600,
-                        ),
-                  ),
-                )),
-          ],
         ),
       ),
     );
