@@ -13,6 +13,7 @@ import '../components/publicacoes_section.dart';
 import '../components/services_horizontal_list.dart';
 import '../components/testemunhos_section.dart';
 import 'home_cliente_servicos_view.dart';
+import 'home_cliente_parceiros_view.dart';
 
 class HomeClienteNormalView extends StatefulWidget {
   const HomeClienteNormalView({super.key});
@@ -104,11 +105,17 @@ class _HomeClienteNormalViewState extends State<HomeClienteNormalView> {
                           ),
                         );
                         return;
-                      }
-                     else if (e == 'Formação') {
+                      } else if (e == 'Formação') {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const HomeClienteFormacaoView(),
+                          ),
+                        );
+                        return;
+                      } else if (e == 'Parceiros') {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const HomeClienteParceirosView(),
                           ),
                         );
                         return;
@@ -215,6 +222,13 @@ class _HomeClienteNormalViewState extends State<HomeClienteNormalView> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => const HomeClienteFormacaoView(),
+                    ),
+                  );
+                  return;
+                } else if (item == 'Parceiros') {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const HomeClienteParceirosView(),
                     ),
                   );
                   return;

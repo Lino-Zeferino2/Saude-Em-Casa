@@ -399,9 +399,48 @@ class HomeClienteFormacaoDetalheView extends StatelessWidget {
 
   const HomeClienteFormacaoDetalheView({super.key, required this.course});
 
+  bool _hasCertification() {
+    final haystack = '${course.level} ${course.description}'.toLowerCase();
+    return haystack.contains('cert');
+  }
+
   @override
   Widget build(BuildContext context) {
     final isMobile = MediaQuery.of(context).size.width < 700;
+    final hasCert = _hasCertification();
+
+    final left = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _Section(
+          title: 'O que você vai aprender',
+          child: _TwoColList(
+            items: course.highlights,
+            itemBuilder: (h) => _BulletRow(text: h),
+          ),
+        ),
+        const SizedBox(height: 14),
+        _Section(
+          title: 'Conteúdo do curso (Módulos)',
+          child: _ModulesList(
+            modules: course.syllabus,
+          ),
+        ),
+      ],
+    );
+
+    final right = _CourseSummaryCard(
+      duration: course.duration,
+      hasCertification: hasCert,
+      materials: course.syllabus,
+      onEnroll: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => HomeClienteInscricaoCursoView(course: course),
+          ),
+        );
+      },
+    );
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -420,51 +459,355 @@ class HomeClienteFormacaoDetalheView extends StatelessWidget {
             children: [
               _HeroCourseHeader(course: course),
               const SizedBox(height: 14),
-              _Section(
-                title: 'O que você vai aprender',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+              if (isMobile)
+                Column(
                   children: [
-                    ...course.highlights.map(
-                      (h) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: _BulletRow(text: h),
-                      ),
-                    ),
+                    left,
+                    const SizedBox(height: 14),
+                    right,
                   ],
+                )
+              else
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(flex: 7, child: left),
+                        const SizedBox(width: 14),
+                        Expanded(flex: 3, child: right),
+                      ],
+                    );
+                  },
                 ),
-              ),
-              const SizedBox(height: 14),
-              _Section(
-                title: 'Programa (visão geral)',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    ...course.syllabus.map(
-                      (s) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: _BulletRow(text: s),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-              _PrimaryCtaRow(
-                isMobile: isMobile,
-                onEnroll: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => HomeClienteInscricaoCursoView(course: course),
-                    ),
-                  );
-                },
-              ),
               const SizedBox(height: 24),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _TwoColList extends StatelessWidget {
+  final List<String> items;
+  final Widget Function(String item) itemBuilder;
+
+  const _TwoColList({
+    required this.items,
+    required this.itemBuilder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: items.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisExtent: 46,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemBuilder: (context, i) {
+        final item = items[i];
+        return itemBuilder(item);
+      },
+    );
+  }
+}
+
+class _ModulesList extends StatelessWidget {
+  final List<String> modules;
+
+  const _ModulesList({required this.modules});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (int i = 0; i < modules.length; i++) ...[
+          _ModuleTile(
+            index: i + 1,
+            text: modules[i],
+          ),
+          if (i != modules.length - 1)
+            Divider(
+              color: Colors.grey.withOpacity(0.25),
+              height: 22,
+            ),
+        ],
+      ],
+    );
+  }
+}
+
+class _ModuleTile extends StatelessWidget {
+  final int index;
+  final String text;
+
+  const _ModuleTile({required this.index, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Módulo $index',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.textPrimary,
+                ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            text,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textSecondary,
+                  height: 1.35,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CourseSummaryCard extends StatelessWidget {
+  final String duration;
+  final bool hasCertification;
+  final List<String> materials;
+  final VoidCallback onEnroll;
+
+  const _CourseSummaryCard({
+    required this.duration,
+    required this.hasCertification,
+    required this.materials,
+    required this.onEnroll,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final normalizedCertText = hasCertification
+        ? 'Certificação: disponível'
+        : 'Certificação: não incluída';
+
+    final materialsShort = materials.take(4).toList();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.92),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.18),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 16,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Resumo do curso',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.textPrimary,
+                ),
+          ),
+          const SizedBox(height: 10),
+          _SummaryRow(
+            icon: Icons.schedule_rounded,
+            label: 'Duração',
+            value: duration,
+          ),
+          const SizedBox(height: 10),
+          _SummaryRow(
+            icon: Icons.monetization_on_rounded,
+            label: 'Valor do curso',
+            value: '€ 120',
+          ),
+          const SizedBox(height: 10),
+          _SummaryRow(
+            icon: Icons.verified_rounded,
+            label: 'Certificação',
+            value: hasCertification ? 'Disponível' : 'Não incluída',
+          ),
+          const SizedBox(height: 10),
+          _SummaryList(
+            title: 'Materiais necessários',
+            items: materialsShort,
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            height: 48,
+            child: FilledButton(
+              onPressed: onEnroll,
+              style: FilledButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: const Text(
+                'Se inscrever',
+                style: TextStyle(fontWeight: FontWeight.w900),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.primary.withOpacity(0.14),
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.verified_rounded,
+                    color: AppColors.primary, size: 20),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    hasCertification
+                        ? 'Você recebe orientação e suporte durante todo o processo.'
+                        : 'Você recebe orientação prática para começar com segurança.',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                          height: 1.3,
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SummaryRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _SummaryRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.85),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.14),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.primary, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w900,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SummaryList extends StatelessWidget {
+  final String title;
+  final List<String> items;
+
+  const _SummaryList({
+    required this.title,
+    required this.items,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w800,
+              ),
+        ),
+        const SizedBox(height: 8),
+        ...items.map(
+          (e) => Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.check_circle_rounded,
+                    color: AppColors.primary, size: 18),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    e,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                          height: 1.25,
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
