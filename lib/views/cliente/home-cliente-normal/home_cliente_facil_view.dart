@@ -18,25 +18,35 @@ class HomeClienteFacilView extends StatelessWidget {
         automaticallyImplyLeading: false,
         title: Row(
           children: [
-            Image.asset(
-              'assets/logo.png',
-              width: 36,
-              height: 36,
-              fit: BoxFit.contain,
-              errorBuilder: (_, __, ___) => const Icon(Icons.local_hospital_rounded),
+           
+            Builder(
+              builder: (context) {
+                final isMobile = MediaQuery.sizeOf(context).width < 600;
+                final logoSize = isMobile ? 60.0 : 150.0;
+
+                return Image.asset(
+                  'assets/logo.png',
+                  width: logoSize,
+                  height: logoSize,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.local_hospital_rounded),
+                );
+              },
             ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Saúde em Casa',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.textPrimary,
-                      ),
-                ),
+                if (MediaQuery.sizeOf(context).width >= 600)
+                  Text(
+                    'Saúde em Casa',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.primary,
+                        ),
+                  ),
+               if (MediaQuery.sizeOf(context).width >= 600)
                 Text(
                   'Modo Fácil',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -83,6 +93,7 @@ class HomeClienteFacilView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  SizedBox(height: 44),
                   // Título
                   Text(
                     'Olá! Como a saúde em Casa pode lhe ajudar hoje?',
@@ -91,39 +102,58 @@ class HomeClienteFacilView extends StatelessWidget {
                           color: AppColors.textPrimary,
                         ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 32),
 
-                  // Falar / Ouvir (mesma linha)
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _BigRowActionCard(
-                          icon: Icons.mic,
-                          color: Colors.blue,
-                          title: 'Falar com app',
-                          subtitle: 'Tire dúvidas (demo)',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Falar com app (em breve)')),
-                            );
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _BigRowActionCard(
-                          icon: Icons.volume_up_rounded,
-                          color: Colors.green,
-                          title: 'Ouvir a página',
-                          subtitle: 'Leitura em voz alta (demo)',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Ouvir a página (em breve)')),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                  // Falar / Ouvir
+                  // - Web/desktop: mantém duas colunas na mesma linha
+                  // - Mobile: empilha em coluna para evitar overflow horizontal
+                  Builder(
+                    builder: (context) {
+                      final width = MediaQuery.sizeOf(context).width;
+                      final isMobile = width < 600;
+
+                      final firstCard = _BigRowActionCard(
+                        icon: Icons.mic,
+                        color: Colors.blue,
+                        title: 'Falar com app',
+                        subtitle: 'Tire dúvidas',
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Falar com app (em breve)')),
+                          );
+                        },
+                      );
+
+                      final secondCard = _BigRowActionCard(
+                        icon: Icons.volume_up_rounded,
+                        color: Colors.green,
+                        title: 'Ouvir a página',
+                        subtitle: 'Leitura em voz alta',
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Ouvir a página (em breve)')),
+                          );
+                        },
+                      );
+
+                      if (isMobile) {
+                        return Column(
+                          children: [
+                            SizedBox(height: 98, child: firstCard),
+                            const SizedBox(height: 12),
+                            SizedBox(height: 98, child: secondCard),
+                          ],
+                        );
+                      }
+
+                      return Row(
+                        children: [
+                          Expanded(child: firstCard),
+                          const SizedBox(width: 12),
+                          Expanded(child: secondCard),
+                        ],
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 16),
