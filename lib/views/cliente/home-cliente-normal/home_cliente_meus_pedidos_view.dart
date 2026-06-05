@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../theme/app_colors.dart';
-import '../components/app_footer.dart';
+import 'home_cliente_pedido_detalhe_view.dart';
 
 class HomeClienteMeusPedidosView extends StatefulWidget {
   const HomeClienteMeusPedidosView({super.key});
@@ -30,6 +30,37 @@ class _Pedido {
     required this.descricao,
     required this.criadoEm,
   });
+}
+
+PedidoNaturezaDetalhe _pedidoNaturezaFromEnum(PedidoNatureza n) {
+  switch (n) {
+    case PedidoNatureza.cursos:
+      return PedidoNaturezaDetalhe.cursos;
+    case PedidoNatureza.consulta:
+      return PedidoNaturezaDetalhe.consulta;
+    case PedidoNatureza.receitas:
+      return PedidoNaturezaDetalhe.receitas;
+    case PedidoNatureza.outros:
+    default:
+      return PedidoNaturezaDetalhe.outros;
+  }
+}
+
+PedidoStatusDetalhe _pedidoStatusFromEnum(PedidoStatus s) {
+  // Mapeamento placeholder (pode ser refinado depois com estados reais por natureza).
+  switch (s) {
+    case PedidoStatus.pendente:
+      return PedidoStatusDetalhe.inscricao_realizada;
+    case PedidoStatus.confirmado:
+      return PedidoStatusDetalhe.pagamento_confirmado;
+    case PedidoStatus.em_andamento:
+      return PedidoStatusDetalhe.atendimento_em_curso;
+    case PedidoStatus.finalizado:
+      return PedidoStatusDetalhe.curso_concluido;
+    case PedidoStatus.cancelado:
+    default:
+      return PedidoStatusDetalhe.cancelado_cliente;
+  }
 }
 
 class _HomeClienteMeusPedidosViewState extends State<HomeClienteMeusPedidosView> {
@@ -519,11 +550,19 @@ class _PedidoList extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  tooltip: 'Detalhes (em breve)',
+                  tooltip: 'Ver detalhes',
                   icon: const Icon(Icons.chevron_right_rounded),
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Detalhes em breve: ${p.id}')),
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => HomeClientePedidoDetalheView(
+                          id: p.id,
+                          titulo: p.titulo,
+                          descricao: p.descricao,
+                          natureza: _pedidoNaturezaFromEnum(p.natureza),
+                          status: _pedidoStatusFromEnum(p.status),
+                        ),
+                      ),
                     );
                   },
                 ),
