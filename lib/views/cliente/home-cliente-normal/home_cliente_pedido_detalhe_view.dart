@@ -817,11 +817,14 @@ class _LocationCard extends StatelessWidget {
                     child: Image.asset(
                       'map.png',
                       fit: BoxFit.cover,
+                      
                       errorBuilder: (_, __, ___) => CustomPaint(
                         painter: _FakeMapPainter(),
                       ),
+                      
                     ),
                   ),
+                  /*
                   Positioned(
                     left: 26,
                     top: 70,
@@ -837,6 +840,7 @@ class _LocationCard extends StatelessWidget {
                       child: _FakeRouteOverlay(),
                     ),
                   ),
+                  */
                 ],
               ),
             ),
