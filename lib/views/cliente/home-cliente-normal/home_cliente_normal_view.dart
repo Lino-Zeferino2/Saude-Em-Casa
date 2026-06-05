@@ -14,6 +14,7 @@ import '../components/services_horizontal_list.dart';
 import '../components/testemunhos_section.dart';
 import 'home_cliente_servicos_view.dart';
 import 'home_cliente_parceiros_view.dart';
+import 'home_cliente_meus_pedidos_view.dart';
 
 class HomeClienteNormalView extends StatefulWidget {
   const HomeClienteNormalView({super.key});
@@ -95,6 +96,7 @@ class _HomeClienteNormalViewState extends State<HomeClienteNormalView> {
                                 ),
                       ),
                       onTap: () {
+                      print("Clicou em: $e");
                       Navigator.of(context).pop();
                       setState(() => activeMenu = e);
 
@@ -116,6 +118,13 @@ class _HomeClienteNormalViewState extends State<HomeClienteNormalView> {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const HomeClienteParceirosView(),
+                          ),
+                        );
+                        return;
+                      } else if (e == 'Meus Pedidos') {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const HomeClienteMeusPedidosView(),
                           ),
                         );
                         return;
@@ -232,6 +241,13 @@ class _HomeClienteNormalViewState extends State<HomeClienteNormalView> {
                     ),
                   );
                   return;
+                } else if (item == 'Meus Pedidos') {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const HomeClienteMeusPedidosView(),
+                      ),
+                    );
+                    return;
                 }
 
                 ScaffoldMessenger.of(context).showSnackBar(

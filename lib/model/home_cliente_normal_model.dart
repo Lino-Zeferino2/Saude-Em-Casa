@@ -6,6 +6,7 @@ class HomeClienteNormalModel {
     'Serviços',
     'Formação',
     'Parceiros',
+    'Meus Pedidos',
     'Sobre nós',
   ];
 
