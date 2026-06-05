@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../theme/app_colors.dart';
+import '../components/app_footer.dart';
 
 class HomeClienteMeusPedidosView extends StatefulWidget {
   const HomeClienteMeusPedidosView({super.key});
@@ -34,6 +35,7 @@ class _Pedido {
 class _HomeClienteMeusPedidosViewState extends State<HomeClienteMeusPedidosView> {
   PedidoNatureza? _naturezaFiltro;
   PedidoStatus? _statusFiltro;
+  String _searchQuery = '';
 
   late final List<_Pedido> _allPedidos;
 
@@ -88,6 +90,13 @@ class _HomeClienteMeusPedidosViewState extends State<HomeClienteMeusPedidosView>
   bool _matches(_Pedido p) {
     if (_naturezaFiltro != null && p.natureza != _naturezaFiltro) return false;
     if (_statusFiltro != null && p.status != _statusFiltro) return false;
+
+    final q = _searchQuery.trim().toLowerCase();
+    if (q.isNotEmpty) {
+      final haystack = '${p.id} ${p.titulo} ${p.descricao}'.toLowerCase();
+      if (!haystack.contains(q)) return false;
+    }
+
     return true;
   }
 
@@ -187,6 +196,9 @@ class _HomeClienteMeusPedidosViewState extends State<HomeClienteMeusPedidosView>
         child: LayoutBuilder(
           builder: (context, constraints) {
             final horizontalPadding = isMobile ? 16.0 : 24.0;
+
+            // Barra de pesquisa
+
             return Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: horizontalPadding,
@@ -195,6 +207,48 @@ class _HomeClienteMeusPedidosViewState extends State<HomeClienteMeusPedidosView>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  TextField(
+                    onChanged: (value) =>
+                        setState(() => _searchQuery = value),
+                    decoration: InputDecoration(
+                      hintText: 'Pesquisar por ID, título ou descrição',
+                      prefixIcon: const Icon(Icons.search_rounded),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.92),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 14,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          color: AppColors.primary.withOpacity(0.18),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          color: AppColors.primary.withOpacity(0.18),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                          color: AppColors.primary.withOpacity(0.35),
+                          width: 1.5,
+                        ),
+                      ),
+                      suffixIcon: _searchQuery.trim().isNotEmpty
+                          ? IconButton(
+                              tooltip: 'Limpar pesquisa',
+                              onPressed: () =>
+                                  setState(() => _searchQuery = ''),
+                              icon: const Icon(Icons.close_rounded),
+                            )
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   _FiltroChips(
                     isMobile: isMobile,
                     naturezas: PedidoNatureza.values,
@@ -209,16 +263,18 @@ class _HomeClienteMeusPedidosViewState extends State<HomeClienteMeusPedidosView>
                     naturezas: PedidoStatus.values,
                     selecionado: _statusFiltro,
                     labelBuilder: (s) => _statusLabel(s),
-                    iconBuilder: (s) => Icons.circle_rounded,
+                    iconBuilder: (_) => Icons.circle_rounded,
                     onChanged: (s) => setState(() => _statusFiltro = s),
-                    colorize: (status) => _statusColor(status as PedidoStatus, context),
+                    colorize: (status) =>
+                        _statusColor(status, context),
                   ),
                   const SizedBox(height: 16),
                   Expanded(
                     child: pedidosFiltrados.isEmpty
                         ? _EmptyState(
                             title: 'Nenhum pedido encontrado',
-                            subtitle: 'Tente ajustar os filtros para ver outras solicitações.',
+                            subtitle:
+                                'Tente ajustar os filtros ou a pesquisa.',
                           )
                         : _PedidoList(
                             pedidos: pedidosFiltrados,
@@ -228,6 +284,7 @@ class _HomeClienteMeusPedidosViewState extends State<HomeClienteMeusPedidosView>
                             statusLabel: _statusLabel,
                           ),
                   ),
+                  
                 ],
               ),
             );
