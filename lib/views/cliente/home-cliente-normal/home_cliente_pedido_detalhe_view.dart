@@ -514,6 +514,7 @@ class _ProgressCard extends StatelessWidget {
                     title: steps[i],
                     isDone: i < currentIndex,
                     isCurrent: i == currentIndex,
+                    isLast: i == steps.length - 1,
                   ),
               ],
             ),
@@ -529,17 +530,25 @@ class _StepRow extends StatelessWidget {
     required this.title,
     required this.isDone,
     required this.isCurrent,
+    required this.isLast,
   });
 
   final String title;
   final bool isDone;
   final bool isCurrent;
+  final bool isLast;
 
   @override
   Widget build(BuildContext context) {
-    final baseColor = AppColors.primary;
-    final dotColor = isDone ? const Color(0xFF2E7D32) : baseColor;
-    final lineColor = isDone ? const Color(0xFF2E7D32).withOpacity(0.35) : baseColor.withOpacity(0.35);
+    const doneColor = Color(0xFF2E7D32);
+    final baseBlue = AppColors.primary;
+
+    final circleFill = isCurrent ? baseBlue : (isDone ? doneColor : baseBlue);
+    final circleBorder = isCurrent ? baseBlue.withOpacity(0.45) : (isDone ? doneColor.withOpacity(0.45) : baseBlue.withOpacity(0.45));
+
+    // Para “barras ligadas”: desenhar uma haste maior (abaixo do círculo)
+    // exceto no último passo.
+    final connectorColor = (isDone || isCurrent) ? doneColor : baseBlue;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -555,15 +564,21 @@ class _StepRow extends StatelessWidget {
                   height: 12,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isCurrent ? baseColor : dotColor,
+                    color: circleFill,
                     border: Border.all(
-                      color: isCurrent ? baseColor.withOpacity(0.45) : dotColor.withOpacity(0.45),
+                      color: circleBorder,
                       width: 2,
                     ),
                   ),
                 ),
-                const SizedBox(height: 6),
-                Container(height: 18, width: 2, color: isDone || isCurrent ? lineColor : baseColor.withOpacity(0.18)),
+                if (!isLast)
+                  Container(
+                    // haste contínua (ligação) até o próximo passo
+                    height: 30,
+                    width: 2,
+                    margin: const EdgeInsets.only(top: 6),
+                    color: connectorColor.withOpacity(isDone || isCurrent ? 0.70 : 0.25),
+                  ),
               ],
             ),
           ),
