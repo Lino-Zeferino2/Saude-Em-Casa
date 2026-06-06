@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_meus_pedidos_view.dart';
 
 import '../../../model/auth/register_model.dart';
 import '../../../theme/app_colors.dart';
@@ -31,7 +32,7 @@ class _HomeClientePerfilViewState extends State<HomeClientePerfilView> {
 
   DateTime? nextVisitAt;
 
-  bool modoFacilEnabled = true;
+  bool modoFacilEnabled = false;
   bool notificationsEnabled = true;
 
   // Contatos de emergência placeholder
@@ -1076,7 +1077,9 @@ class _LeftMenuDesktop extends StatelessWidget {
               ),
               onTap: () {},
             ),
-            _LeftMenuTile(icon: Icons.shopping_bag_outlined, title: 'Meus pedidos', onTap: () {}),
+            _LeftMenuTile(icon: Icons.shopping_bag_outlined, title: 'Meus pedidos', onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context)=>HomeClienteMeusPedidosView()));
+            }),
             _LeftMenuTile(icon: Icons.family_restroom_rounded, title: 'Associar um Familiar', onTap: () {}),
             _LeftMenuTile(icon: Icons.question_answer_outlined, title: 'Perguntas Frequentes', onTap: () {}),
             _LeftMenuTile(icon: Icons.support_agent_outlined, title: 'Ajuda', onTap: () {}),
