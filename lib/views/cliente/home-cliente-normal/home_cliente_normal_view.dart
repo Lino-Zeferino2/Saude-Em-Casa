@@ -13,6 +13,7 @@ import '../components/testemunhos_section.dart';
 import 'home_cliente_servicos_view.dart';
 import 'home_cliente_parceiros_view.dart';
 import 'home_cliente_meus_pedidos_view.dart';
+import 'home_cliente_perfil_view.dart';
 
 import '../../../utils/local_storage_service.dart';
 import '../components/app_footer.dart';
@@ -325,7 +326,11 @@ class _HomeClienteNormalViewState extends State<HomeClienteNormalView> {
                       child: IconButton(
                         tooltip: 'Perfil',
                         onPressed: () {
-                          // Placeholder: abrir perfil/conta
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const HomeClientePerfilView(),
+                            ),
+                          );
                         },
                         icon: const Icon(
                           Icons.person_rounded,
