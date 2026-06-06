@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../../model/auth/login_model.dart';
+import '../../utils/local_storage_service.dart';
 import '../../views/cliente/auth/register_view_v2.dart';
+import '../../views/cliente/home-cliente-normal/home_cliente_normal_view.dart';
 
 class LoginController extends ChangeNotifier {
   LoginModel _state = const LoginModel();
@@ -29,7 +31,9 @@ class LoginController extends ChangeNotifier {
   }
 
   String? validatePhoneOrEmail() {
-    if (!_state.isValidPhoneOrEmail) return 'Informe telemóvel (9 dígitos) ou email válido';
+    if (!_state.isValidPhoneOrEmail) {
+      return 'Informe telemóvel (9 dígitos) ou email válido';
+    }
     return null;
   }
 
@@ -38,7 +42,7 @@ class LoginController extends ChangeNotifier {
     return null;
   }
 
-  void onLoginPressed(BuildContext context) {
+  Future<void> onLoginPressed(BuildContext context) async {
     final phoneOrEmailErr = validatePhoneOrEmail();
     final passwordErr = validatePassword();
 
@@ -56,8 +60,41 @@ class LoginController extends ChangeNotifier {
       return;
     }
 
+    final identity = _state.phoneOrEmail.trim();
+    final user = await LocalStorageService.findUserByPhoneOrEmail(identity);
+
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Conta não encontrada. Faça o cadastro.')),
+      );
+      return;
+    }
+
+    final storedPassword = (user['password'] ?? '').toString();
+    if (storedPassword != _state.password) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Senha incorreta.')),
+      );
+      return;
+    }
+
+    await LocalStorageService.saveSession(
+      session: <String, dynamic>{
+        'userEmail': (user['email'] ?? '').toString(),
+        'userPhone': (user['phone'] ?? '').toString(),
+        'fullName': (user['fullName'] ?? '').toString(),
+        'loginAt': DateTime.now().toIso8601String(),
+      },
+    );
+
+    if (!context.mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Entrando (em breve)')),
+      const SnackBar(content: Text('Login efetuado com sucesso!')),
+    );
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const HomeClienteNormalView()),
     );
   }
 
@@ -68,7 +105,6 @@ class LoginController extends ChangeNotifier {
   }
 
   void onRegisterPressed(BuildContext context) {
-    // Navega para a tela de cadastro (Register V2)
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const RegisterViewV2()),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../model/auth/register_model.dart';
+import '../../utils/local_storage_service.dart';
 import '../../views/cliente/auth/login_view.dart';
 
 class RegisterController extends ChangeNotifier {
@@ -53,7 +54,7 @@ class RegisterController extends ChangeNotifier {
         state.passwordError();
   }
 
-  void onRegisterPressed(BuildContext context) {
+  Future<void> onRegisterPressed(BuildContext context) async {
     final err = validateAndGetFirstError();
     if (err != null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -62,8 +63,27 @@ class RegisterController extends ChangeNotifier {
       return;
     }
 
+    final user = <String, dynamic>{
+      'fullName': state.fullName.trim(),
+      'phone': state.phone.trim(),
+      'email': state.email.trim().toLowerCase(),
+      'birthDate': state.birthDate.trim(),
+      'location': state.location.trim(),
+      'gender': state.gender.trim(),
+      'password': state.password, // demo: senha em texto no localStorage
+      'createdAt': DateTime.now().toIso8601String(),
+    };
+
+    await LocalStorageService.saveUser(user);
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Cadastro efetuado (em breve)')),
+      const SnackBar(content: Text('Cadastro efetuado com sucesso!')),
+    );
+
+    if (!context.mounted) return;
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const LoginView()),
     );
   }
 
