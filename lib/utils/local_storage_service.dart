@@ -115,4 +115,12 @@ class LocalStorageService {
 
     LocalStorageImpl.removeItem(_sessionKey);
   }
+
+  /// Remove também os dados de usuários cadastrados (localStorage).
+  static Future<void> clearUsers() async {
+    // ignore: avoid_web_libraries_in_flutter
+    if (!kIsWeb) return;
+
+    LocalStorageImpl.removeItem(_usersKey);
+  }
 }

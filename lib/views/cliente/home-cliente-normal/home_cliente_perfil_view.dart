@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../model/auth/register_model.dart';
 import '../../../theme/app_colors.dart';
+import '../../cliente/auth/login_view.dart';
 import '../../../utils/local_storage_service.dart';
 
 class HomeClientePerfilView extends StatefulWidget {
@@ -107,7 +108,7 @@ class _HomeClientePerfilViewState extends State<HomeClientePerfilView> {
                             fullName: fullName,
                             phone: phone,
                             modoFacilEnabled: modoFacilEnabled,
-                            onLogout: _logoutPlaceholder,
+                            onLogout: _deleteAccountPlaceholder,
                             onExit: _exitPlaceholder,
                           ),
                           const SizedBox(height: 16),
@@ -147,7 +148,7 @@ class _HomeClientePerfilViewState extends State<HomeClientePerfilView> {
                             fullName: fullName,
                             phone: phone,
                             modoFacilEnabled: modoFacilEnabled,
-                            onLogout: _logoutPlaceholder,
+                            onLogout: _deleteAccountPlaceholder,
                             onExit: _exitPlaceholder,
                           ),
                         ),
@@ -199,10 +200,16 @@ class _HomeClientePerfilViewState extends State<HomeClientePerfilView> {
     );
   }
 
-  void _logoutPlaceholder() async {
+  Future<void> _deleteAccountPlaceholder() async {
+    // remove a sessão + (placeholder) a lista de usuários ficará como demo
     await LocalStorageService.clearSession();
     if (!mounted) return;
-    Navigator.of(context).pop();
+
+    // limpa navegação e vai para o Login
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const LoginView()),
+      (_) => false,
+    );
   }
 
   void _exitPlaceholder() {
@@ -418,10 +425,12 @@ class _ProfileHeroCard extends StatelessWidget {
                         ),
                   ),
                   const SizedBox(height: 10),
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8,
+                    runSpacing: 4,
                     children: [
                       Icon(Icons.verified_rounded, color: verifiedColor, size: 18),
-                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(
@@ -1073,15 +1082,16 @@ class _LeftMenuDesktop extends StatelessWidget {
             _LeftMenuTile(icon: Icons.support_agent_outlined, title: 'Ajuda', onTap: () {}),
             const SizedBox(height: 6),
             const Divider(height: 1),
-            const SizedBox(height: 10),
+            const SizedBox(height: 24),
 
             _LeftMenuTile(
               icon: Icons.logout_rounded,
-              title: 'Terminar sessão',
+              title: 'Sair',
               textColor: const Color(0xFFEF4444),
               iconColor: const Color(0xFFEF4444),
               onTap: onLogout,
             ),
+            /*
             _LeftMenuTile(
               icon: Icons.exit_to_app_rounded,
               title: 'Sair',
@@ -1089,6 +1099,7 @@ class _LeftMenuDesktop extends StatelessWidget {
               iconColor: const Color(0xFFEF4444),
               onTap: onExit,
             ),
+            */
           ],
         ),
       ),
