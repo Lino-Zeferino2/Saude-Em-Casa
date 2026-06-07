@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_meus_pedidos_view.dart';
+import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_normal_view.dart';
+import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_parceiros_view.dart';
 
 import '../../../controller/home_cliente_servicos_controller.dart';
 import '../../../model/home_cliente_servicos_model.dart';
@@ -61,15 +64,44 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
       );
       return;
     }
+    else if (item == 'Serviços') {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const HomeClienteServicosView()),
+      );
+      return;
+    } 
+    else if (item == 'Inicio') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeClienteNormalView()),
+      );
+      return;
+    } 
+    else if (item == 'Formação') {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const HomeClienteFormacaoView()),
+      );
+      return;
+    } else if (item == 'Parceiros') {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const HomeClienteParceirosView()),
+      );
+      return;
+    } else if (item == 'Meus Pedidos') {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (_) => const HomeClienteMeusPedidosView()),
+      );
+      return;
+    }
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Em breve: $item')),
     );
+
   }
 
   @override
   Widget build(BuildContext context) {
-    final double logoSize = isMobile ? 44.0 : 64.0;
+    final double logoSize = isMobile ? 120.0 : 130.0;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -96,6 +128,7 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
                       'Serviços',
                       'Formaçao',
                       'Parceiros',
+                      'Meus Pedidos',
                       'Sobre nos',
                     ].map(
                       (item) {
@@ -137,21 +170,14 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
         automaticallyImplyLeading: false,
         titleSpacing: 6,
         leading: isMobile
-            ? AppMenu(
-                items: const [
-                  'Inicio',
-                  'Serviços',
-                  'Formaçao',
-                  'Parceiros',
-                  'Sobre nos',
-                ],
-                activeItem: activeMenu,
-                onMenuSelected: (item) {
-                  _handleMenuSelection(item);
-                },
-                onLoginPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Login (em breve)')),
+            ? Builder(
+                builder: (ctx) {
+                  return IconButton(
+                    tooltip: 'Menu',
+                    icon: const Icon(Icons.menu_rounded),
+                    onPressed: () {
+                      Scaffold.of(ctx).openDrawer();
+                    },
                   );
                 },
               )
@@ -191,6 +217,7 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
                 'Serviços',
                 'Formaçao',
                 'Parceiros',
+                'Meus Pedidos'
                 'Sobre nos',
               ],
               activeItem: activeMenu,

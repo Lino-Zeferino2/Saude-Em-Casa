@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_formacao_view.dart';
+import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_meus_pedidos_view.dart';
+import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_normal_view.dart';
+import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_servicos_view.dart';
 
 import '../../../theme/app_colors.dart';
 import '../components/app_footer.dart';
@@ -150,14 +154,39 @@ class _HomeClienteParceirosViewState extends State<HomeClienteParceirosView> {
                 'Serviços',
                 'Formaçao',
                 'Parceiros',
+                'Meus Pedidos',
                 'Sobre nos',
               ],
               activeItem: 'Parceiros',
               onMenuSelected: (item) {
-                if (item == 'Parceiros') return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Em breve: $item')),
-                );
+               if (item == 'Inicio') {
+         Navigator.of(context).pushReplacement(
+         MaterialPageRoute(builder: (_) => const HomeClienteNormalView()),
+      );
+      return;
+    } 
+    else if (item == 'Formação') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeClienteFormacaoView()),
+      );
+      return;
+    }  else if (item == 'Serviços') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeClienteServicosView()),
+      );
+      return;
+    } 
+    else if (item == 'Parceiros') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeClienteParceirosView()),
+      );
+      return;
+    } else if (item == 'Meus Pedidos') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeClienteMeusPedidosView()),
+      );
+      return;
+    }
               },
               onLoginPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -193,6 +222,7 @@ class _HomeClienteParceirosViewState extends State<HomeClienteParceirosView> {
                       'Serviços',
                       'Formaçao',
                       'Parceiros',
+                      'Meus Pedidos',
                       'Sobre nos'
                     ].map((item) {
                       final selected = item == 'Parceiros';
@@ -380,12 +410,56 @@ class _MobileDrawerTile extends StatelessWidget {
       selected: selected,
       selectedTileColor: AppColors.primary.withOpacity(0.08),
       onTap: () {
+        // fecha Drawer
         Navigator.of(context).pop();
-        if (item != 'Parceiros') {
+
+        // navega para a tela correspondente (mobile)
+        if (item == 'Inicio') {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const HomeClienteNormalView()),
+          );
+          return;
+        }
+
+        if (item == 'Serviços') {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const HomeClienteServicosView()),
+          );
+          return;
+        }
+
+        if (item == 'Formaçao') {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const HomeClienteFormacaoView()),
+          );
+          return;
+        }
+
+        if (item == 'Parceiros') {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const HomeClienteParceirosView()),
+          );
+          return;
+        }
+
+        if (item == 'Meus Pedidos') {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const HomeClienteMeusPedidosView()),
+          );
+          return;
+        }
+
+        // Sobre nos (placeholder)
+        if (item == 'Sobre nos') {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Em breve: $item')),
           );
+          return;
         }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Em breve: $item')),
+        );
       },
     );
   }

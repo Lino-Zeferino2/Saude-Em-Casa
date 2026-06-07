@@ -67,7 +67,14 @@ class _HomeClienteNormalViewState extends State<HomeClienteNormalView> {
         MaterialPageRoute(builder: (_) => const HomeClienteServicosView()),
       );
       return;
-    } else if (item == 'Formação') {
+    } 
+    else if (item == 'Inicio') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeClienteNormalView()),
+      );
+      return;
+    } 
+    else if (item == 'Formação') {
       Navigator.of(context).push(
         MaterialPageRoute(builder: (_) => const HomeClienteFormacaoView()),
       );
@@ -91,7 +98,7 @@ class _HomeClienteNormalViewState extends State<HomeClienteNormalView> {
 
   @override
   Widget build(BuildContext context) {
-    final double logoSize = isMobile ? 44.0 : 64.0;
+    final double logoSize = isMobile ? 120.0 : 130.0;
 
     return Scaffold(
       key: _scaffoldKey,
@@ -108,8 +115,8 @@ class _HomeClienteNormalViewState extends State<HomeClienteNormalView> {
                   children: [
                     Image.asset(
                       'logo.png',
-                      height: 44,
-                      width: 44,
+                      height: 130,
+                      width: 130,
                       errorBuilder: (context, error, stackTrace) {
                         return CircleAvatar(
                           backgroundColor: AppColors.primary.withOpacity(0.15),

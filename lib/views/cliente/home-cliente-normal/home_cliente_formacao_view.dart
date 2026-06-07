@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_meus_pedidos_view.dart';
+import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_normal_view.dart';
+import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_parceiros_view.dart';
+import 'package:saudeemcasa/views/cliente/home-cliente-normal/home_cliente_servicos_view.dart';
 import '../../../theme/app_colors.dart';
 import '../components/app_footer.dart';
 import '../components/app_menu.dart';
@@ -133,14 +137,42 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
 
     // Apenas para demonstrar navegação; Formação abre esta tela
     if (normalized == 'formacao') {
-      Navigator.of(context).push(
+      Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (_) => const HomeClienteFormacaoView(),
         ),
       );
       return;
     }
-
+else if (item == 'Inicio') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeClienteNormalView()),
+      );
+      return;
+    } 
+    else if (item == 'Formação') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeClienteFormacaoView()),
+      );
+      return;
+    } 
+    else if (item == 'Serviços') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeClienteServicosView()),
+      );
+      return;
+    }
+    else if (item == 'Parceiros') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeClienteParceirosView()),
+      );
+      return;
+    } else if (item == 'Meus Pedidos') {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeClienteMeusPedidosView()),
+      );
+      return;
+    }
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Em breve: $item')),
     );
@@ -188,6 +220,7 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
                       'Serviços',
                       'Formaçao',
                       'Parceiros',
+                      'Meus Pedidos',
                       'Sobre nos',
                     ].map(
                       (item) {
@@ -237,7 +270,7 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
                 },
               )
             : null,
-        actions: [
+         actions: [
           if (!isMobile)
             AppMenu(
               items: const [
@@ -245,16 +278,20 @@ class _HomeClienteFormacaoViewState extends State<HomeClienteFormacaoView> {
                 'Serviços',
                 'Formaçao',
                 'Parceiros',
+                'Meus Pedidos'
                 'Sobre nos',
               ],
               activeItem: activeMenu,
-              onMenuSelected: (item) => _handleMenuSelection(item),
+              onMenuSelected: (item) {
+                _handleMenuSelection(item);
+              },
               onLoginPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Login (em breve)')),
                 );
               },
             ),
+          if (!isMobile) const SizedBox(width: 10),
         ],
       ),
       body: SafeArea(
