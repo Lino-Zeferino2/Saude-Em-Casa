@@ -108,7 +108,9 @@ class PostCard extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 12),
-            Row(
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
               children: [
                 _ActionPill(
                   icon: Icons.thumb_up_alt_outlined,
@@ -116,7 +118,6 @@ class PostCard extends StatelessWidget {
                   value: likes,
                   onTap: () => controller.onLike(context, label: 'Gostar'),
                 ),
-                const SizedBox(width: 10),
                 _ActionPill(
                   icon: Icons.comment_outlined,
                   label: 'Comentar',
