@@ -90,7 +90,7 @@ class HomeClienteServicoDetalheView extends StatelessWidget {
                 isMobile: isMobile,
               ),
               const SizedBox(height: 36),
-              AppFooter(),
+             // AppFooter(),
             ],
           ),
         ),

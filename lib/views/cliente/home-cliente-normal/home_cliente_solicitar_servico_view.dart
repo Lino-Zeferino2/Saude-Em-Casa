@@ -242,7 +242,7 @@ class _HomeClienteSolicitarServicoViewState
                 ),
 
               const SizedBox(height: 24),
-              AppFooter(),
+             // AppFooter(),
             ],
           ),
         ),

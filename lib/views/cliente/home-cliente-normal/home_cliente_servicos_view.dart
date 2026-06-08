@@ -217,7 +217,7 @@ class _HomeClienteServicosViewState extends State<HomeClienteServicosView> {
                 'Serviços',
                 'Formaçao',
                 'Parceiros',
-                'Meus Pedidos'
+                'Meus Pedidos',
                 'Sobre nos',
               ],
               activeItem: activeMenu,

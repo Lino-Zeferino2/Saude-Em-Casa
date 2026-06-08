@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "75335575020",
+    "project_id": "saudeemcasa-demo",
+    "storage_bucket": "saudeemcasa-demo.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75335575020:android:205f3d1d91cc249924ccc9",
+        "android_client_info": {
+          "package_name": "com.portifolio.linozeferino.saudeemcasa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7FhbQEytKsqCKEj36NtEU4WZ33N4cZ7M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
